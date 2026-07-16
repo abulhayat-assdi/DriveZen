@@ -1,0 +1,151 @@
+// Drive Zen - Prisma schema (PostgreSQL)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Singleton site-wide settings (id is always "singleton")
+model SiteSettings {
+  id           String  @id @default("singleton")
+  brandName    String  @default("Drive Zen")
+  tagline      String  @default("Premium Car Accessories")
+  logoUrl      String?
+  whatsapp     String  @default("01608221914")
+  phone        String  @default("01608221914")
+  messengerUrl String?
+  facebookUrl  String?
+  address      String?
+  email        String?
+
+  // Hero + marketing copy
+  heroKicker   String  @default("")
+  heroHeadline String  @default("The upgrade your drive deserves.")
+  announcement String?
+
+  // Delivery
+  deliveryInside  Int @default(0) // Dhaka
+  deliveryOutside Int @default(0)
+
+  // Theming
+  primaryColor String @default("#e0b04f")
+  currency     String @default("৳")
+
+  footerText String @default("")
+
+  // Steadfast Courier API credentials
+  steadfastApiKey    String?
+  steadfastSecretKey String?
+
+  // Facebook Pixel + Conversions API
+  fbPixelId     String?
+  fbAccessToken String?
+
+  updatedAt DateTime @updatedAt
+}
+
+// Generic key/value store for every editable text on the landing page
+// (button labels, section headings, nav labels, etc.)
+model SiteContent {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  tagline     String  @default("")
+  badge       String? // e.g. "New", "Best Seller"
+  price       Int     @default(0)
+  oldPrice    Int?
+  priceNote   String? // e.g. "সারা দেশে ফ্রি ডেলিভারি"
+  shortDesc   String  @default("")
+  description String  @default("")
+  heroImage   String?
+  isActive    Boolean @default(false)
+  sortOrder   Int     @default(0)
+
+  images     ProductImage[]
+  features   Feature[]
+  highlights Highlight[]
+  orders     Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String  @default("")
+  sortOrder Int     @default(0)
+}
+
+// "What's included" checklist items
+model Feature {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  icon      String  @default("check")
+  text      String
+  sortOrder Int     @default(0)
+}
+
+// Big image + text highlight sections
+model Highlight {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageUrl    String?
+  title       String
+  description String  @default("")
+  sortOrder   Int     @default(0)
+}
+
+model Faq {
+  id        String @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int    @default(0)
+}
+
+model Order {
+  id             String  @id @default(cuid())
+  orderNumber    String  @unique
+  productId      String?
+  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName    String
+  customerName   String
+  phone          String
+  address        String
+  area           String  @default("inside") // inside | outside
+  quantity       Int     @default(1)
+  unitPrice      Int     @default(0)
+  deliveryCharge Int     @default(0)
+  total          Int     @default(0)
+  note           String?
+  status         String  @default("new") // new|on_the_way|confirmed|cancelled
+
+  // Steadfast Courier
+  courierConsignmentId String?
+  courierTrackingCode  String?
+  courierStatus        String?
+  courierSentAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Admin")
+  createdAt    DateTime @default(now())
+}

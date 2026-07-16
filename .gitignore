@@ -32,9 +32,21 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# database (local SQLite fallback, if ever used again)
+/prisma/*.db
+/prisma/*.db-journal
+
+# user-uploaded media
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Postgres data + uploads volume mounted from docker-compose.yml on the VPS
+/data/
 
 # typescript
 *.tsbuildinfo
