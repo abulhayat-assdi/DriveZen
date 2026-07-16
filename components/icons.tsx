@@ -188,3 +188,25 @@ export const X = (p: P) => (
     <path d="M18 6 6 18M6 6l12 12" />
   </svg>
 );
+
+export const Tag = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.83 8.83a2 2 0 0 0 2.83 0l7.17-7.17a2 2 0 0 0 0-2.83z" />
+    <circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+export const Ban = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="m4.9 4.9 14.2 14.2" />
+  </svg>
+);
+
+export const Cart = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21.5 8H6" />
+  </svg>
+);

@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { STATUS_ORDER, type OrderStatus } from "./status";
 import { sendToSteadfast } from "@/lib/steadfast";
+import { normalizeBdPhone } from "@/lib/phone";
 
 async function requireAuth() {
   const s = await getSession();
@@ -39,10 +40,12 @@ export async function updateOrder(
   if (!order) return { error: "Order not found." };
 
   const customerName = fields.customerName.trim();
-  const phone = fields.phone.trim();
   const address = fields.address.trim();
   if (customerName.length < 2) return { error: "Please enter a valid name." };
   if (address.length < 5) return { error: "Please enter a full address." };
+
+  const phone = normalizeBdPhone(fields.phone);
+  if (!phone) return { error: "Please enter a valid 11-digit mobile number." };
 
   const quantity = Math.max(1, Math.min(99, Math.round(fields.quantity) || 1));
   const area = fields.area === "outside" ? "outside" : "inside";
@@ -53,13 +56,13 @@ export async function updateOrder(
   const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
   const deliveryCharge =
     area === "outside" ? settings?.deliveryOutside ?? order.deliveryCharge : settings?.deliveryInside ?? order.deliveryCharge;
-  const total = order.unitPrice * quantity + deliveryCharge;
+  const total = Math.max(0, order.unitPrice * quantity - order.discountAmount) + deliveryCharge;
 
   await prisma.order.update({
     where: { id },
     data: {
       customerName,
-      phone: phone.replace(/[^0-9]/g, "") || phone,
+      phone,
       address,
       note: fields.note.trim() || null,
       quantity,

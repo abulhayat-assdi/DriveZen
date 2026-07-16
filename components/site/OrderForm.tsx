@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { formatTaka, toWhatsAppNumber } from "@/lib/utils";
-import { Check, Whatsapp } from "@/components/icons";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { formatTaka } from "@/lib/utils";
 
 declare global {
   interface Window {
@@ -13,6 +13,20 @@ declare global {
 function readCookie(name: string): string | undefined {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : undefined;
+}
+
+function getSessionId(): string {
+  const KEY = "dz_checkout_session";
+  try {
+    let id = window.sessionStorage.getItem(KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      window.sessionStorage.setItem(KEY, id);
+    }
+    return id;
+  } catch {
+    return crypto.randomUUID();
+  }
 }
 
 type Props = {
@@ -33,19 +47,132 @@ export default function OrderForm({
   deliveryInside,
   deliveryOutside,
   currency,
-  whatsapp,
   content,
 }: Props) {
+  const router = useRouter();
   const [qty, setQty] = useState(1);
   const [area, setArea] = useState<"inside" | "outside">("inside");
   const [form, setForm] = useState({ name: "", phone: "", address: "", note: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
   const [error, setError] = useState<string | null>(null);
-  const [orderNo, setOrderNo] = useState<string | null>(null);
+
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [discount, setDiscount] = useState(0);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
+
+  const sessionIdRef = useRef<string | null>(null);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const delivery = area === "outside" ? deliveryOutside : deliveryInside;
   const subtotal = unitPrice * qty;
-  const total = subtotal + delivery;
+  const total = Math.max(0, subtotal - discount) + delivery;
+
+  useEffect(() => {
+    sessionIdRef.current = getSessionId();
+  }, []);
+
+  // Best-effort abandoned-cart capture: debounced while typing, plus a
+  // beacon fallback so a tab close before the debounce fires still lands.
+  useEffect(() => {
+    const hasSignal = form.name.trim() || form.phone.trim() || form.address.trim();
+    if (!hasSignal) return;
+
+    if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = setTimeout(() => {
+      const sessionId = sessionIdRef.current;
+      if (!sessionId) return;
+      fetch("/api/draft-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          sessionId,
+          productId,
+          productName,
+          name: form.name,
+          phone: form.phone,
+          address: form.address,
+          note: form.note,
+          quantity: qty,
+          area,
+        }),
+      }).catch(() => {});
+    }, 1200);
+
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, [form, qty, area, productId, productName]);
+
+  useEffect(() => {
+    function sendBeaconDraft() {
+      const sessionId = sessionIdRef.current;
+      if (!sessionId) return;
+      const hasSignal = form.name.trim() || form.phone.trim() || form.address.trim();
+      if (!hasSignal) return;
+      const blob = new Blob(
+        [
+          JSON.stringify({
+            sessionId,
+            productId,
+            productName,
+            name: form.name,
+            phone: form.phone,
+            address: form.address,
+            note: form.note,
+            quantity: qty,
+            area,
+          }),
+        ],
+        { type: "application/json" }
+      );
+      navigator.sendBeacon?.("/api/draft-orders", blob);
+    }
+    document.addEventListener("visibilitychange", sendBeaconDraft);
+    window.addEventListener("pagehide", sendBeaconDraft);
+    return () => {
+      document.removeEventListener("visibilitychange", sendBeaconDraft);
+      window.removeEventListener("pagehide", sendBeaconDraft);
+    };
+  }, [form, qty, area, productId, productName]);
+
+  function onCouponInputChange(v: string) {
+    setCouponInput(v);
+    if (appliedCoupon) {
+      setAppliedCoupon(null);
+      setDiscount(0);
+    }
+    setCouponError(null);
+  }
+
+  async function applyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setCouponError(null);
+    setCouponChecking(true);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setCouponError(data.error || "This coupon can't be applied.");
+        setAppliedCoupon(null);
+        setDiscount(0);
+        return;
+      }
+      setAppliedCoupon(code);
+      setDiscount(data.discount);
+    } catch {
+      setCouponError("Network error. Please try again.");
+    } finally {
+      setCouponChecking(false);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,6 +191,8 @@ export default function OrderForm({
           eventId,
           fbp: readCookie("_fbp"),
           fbc: readCookie("_fbc"),
+          couponCode: appliedCoupon,
+          sessionId: sessionIdRef.current,
         }),
       });
       const data = await res.json();
@@ -75,43 +204,14 @@ export default function OrderForm({
       window.fbq?.(
         "track",
         "Purchase",
-        { value: total, currency: "BDT" },
+        { value: data.total, currency: "BDT" },
         { eventID: eventId }
       );
-      setOrderNo(data.orderNumber);
-      setStatus("done");
+      router.push(`/thank-you?order=${encodeURIComponent(data.orderNumber)}`);
     } catch {
       setError("Network error. Please try again.");
       setStatus("idle");
     }
-  }
-
-  if (status === "done") {
-    const wa = `https://wa.me/${toWhatsAppNumber(whatsapp)}?text=${encodeURIComponent(
-      `Hello, I placed an order.\nOrder no: ${orderNo}\nProduct: ${productName}`
-    )}`;
-    return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center">
-        <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
-          <Check className="h-8 w-8" />
-        </div>
-        <h3 className="font-display text-2xl font-bold uppercase">{content.order_form_success_heading}</h3>
-        <p className="mt-2 text-muted">
-          Your order number is{" "}
-          <span className="font-semibold text-emerald-300">{orderNo}</span>.
-          <br />
-          We&apos;ll call you shortly to confirm.
-        </p>
-        <a
-          href={wa}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 font-semibold text-white"
-        >
-          <Whatsapp className="h-5 w-5" /> {content.order_form_whatsapp_button}
-        </a>
-      </div>
-    );
   }
 
   const input =
@@ -190,6 +290,32 @@ export default function OrderForm({
             onChange={(e) => setForm({ ...form, note: e.target.value })}
           />
         </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm text-muted">{content.order_form_coupon_label}</label>
+          <div className="flex gap-2">
+            <input
+              className={`${input} uppercase`}
+              placeholder={content.order_form_coupon_placeholder}
+              value={couponInput}
+              onChange={(e) => onCouponInputChange(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={applyCoupon}
+              disabled={couponChecking || !couponInput.trim()}
+              className="shrink-0 rounded-xl border border-gold/40 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold transition hover:bg-gold/20 disabled:opacity-50"
+            >
+              {couponChecking ? "…" : content.order_form_coupon_apply_button}
+            </button>
+          </div>
+          {couponError && <p className="mt-1.5 text-sm text-red-300">{couponError}</p>}
+          {appliedCoupon && !couponError && (
+            <p className="mt-1.5 text-sm text-emerald-300">
+              Applied &quot;{appliedCoupon}&quot; — {formatTaka(discount, currency)} off
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Summary */}
@@ -224,6 +350,12 @@ export default function OrderForm({
               <span className="text-muted">{content.order_form_subtotal_label}</span>
               <span>{formatTaka(subtotal, currency)}</span>
             </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald-300">
+                <span>{content.order_form_discount_label}</span>
+                <span>-{formatTaka(discount, currency)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted">{content.order_form_delivery_label}</span>
               <span>{formatTaka(delivery, currency)}</span>

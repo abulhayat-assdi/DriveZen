@@ -11,19 +11,27 @@ import {
   Help,
   Cog,
   Edit,
+  Shield,
   Logout,
   External,
   Menu,
   Close,
+  Tag,
+  Ban,
+  Cart,
 } from "@/components/icons";
 
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard", icon: Grid },
   { href: "/admin/order", label: "Orders", icon: Bag },
+  { href: "/admin/abandoned-carts", label: "Abandoned Carts", icon: Cart },
+  { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/products", label: "Products", icon: Box },
   { href: "/admin/content", label: "Content Management", icon: Edit },
   { href: "/admin/faqs", label: "FAQs", icon: Help },
+  { href: "/admin/blocklist", label: "Blocklist", icon: Ban },
   { href: "/admin/settings", label: "Settings", icon: Cog },
+  { href: "/admin/access", label: "Access Management", icon: Shield },
 ];
 
 export default function Sidebar({ email }: { email: string }) {

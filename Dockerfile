@@ -27,8 +27,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Full node_modules (not just the standalone trace) so the `prisma` CLI is
+# available at runtime — needed to run migrations on container start when
+# there's no separate `migrate` service (e.g. deploying as a single Coolify
+# app instead of via docker-compose.yml).
+COPY --from=builder /app/node_modules ./node_modules
 
 # Uploaded product images are written here at runtime — mount a volume
 # over this path (see docker-compose.yml) so they survive redeploys.
@@ -39,4 +42,7 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+# Applying pending migrations on every start is safe/idempotent — it only
+# runs migrations that haven't been applied yet. Seeding is NOT run here
+# since it resets demo product/FAQ content; run it manually once instead.
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
