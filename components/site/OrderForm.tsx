@@ -215,13 +215,13 @@ export default function OrderForm({
   }
 
   const input =
-    "w-full rounded-xl border border-line bg-ink-2 px-4 py-3 text-fg outline-none transition placeholder:text-muted-2 focus:border-gold/60 focus:ring-2 focus:ring-gold/15";
+    "w-full rounded-[10px] border border-white/12 bg-night px-4 py-3 text-white outline-none transition placeholder:text-white/35 focus:border-brand/70 focus:ring-2 focus:ring-brand/20";
 
   return (
     <form onSubmit={submit} className="grid gap-5 lg:grid-cols-5">
       <div className="grid gap-4 lg:col-span-3">
         <div>
-          <label className="mb-1.5 block text-sm text-muted">{content.order_form_name_label}</label>
+          <label className="mb-1.5 block text-sm text-white/60">{content.order_form_name_label}</label>
           <input
             className={input}
             placeholder="e.g. John Rahman"
@@ -231,7 +231,7 @@ export default function OrderForm({
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm text-muted">{content.order_form_phone_label}</label>
+          <label className="mb-1.5 block text-sm text-white/60">{content.order_form_phone_label}</label>
           <input
             className={input}
             placeholder="01XXXXXXXXX"
@@ -242,7 +242,7 @@ export default function OrderForm({
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm text-muted">{content.order_form_address_label}</label>
+          <label className="mb-1.5 block text-sm text-white/60">{content.order_form_address_label}</label>
           <textarea
             className={input}
             rows={3}
@@ -254,7 +254,7 @@ export default function OrderForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-muted">{content.order_form_area_label}</label>
+          <label className="mb-2 block text-sm text-white/60">{content.order_form_area_label}</label>
           <div className="grid grid-cols-2 gap-3">
             {(
               [
@@ -268,12 +268,12 @@ export default function OrderForm({
                 onClick={() => setArea(o.key)}
                 className={`rounded-xl border px-4 py-3 text-left transition ${
                   area === o.key
-                    ? "border-gold bg-gold/10 ring-gold"
-                    : "border-line bg-ink-2 hover:border-line-2"
+                    ? "border-brand bg-brand/10 ring-gold"
+                    : "border-white/12 bg-night hover:border-white/25"
                 }`}
               >
                 <span className="block text-sm font-medium">{o.label}</span>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-white/50">
                   Delivery {formatTaka(o.charge, currency)}
                 </span>
               </button>
@@ -282,7 +282,7 @@ export default function OrderForm({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm text-muted">{content.order_form_note_label}</label>
+          <label className="mb-1.5 block text-sm text-white/60">{content.order_form_note_label}</label>
           <input
             className={input}
             placeholder="Any special instructions"
@@ -292,7 +292,7 @@ export default function OrderForm({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm text-muted">{content.order_form_coupon_label}</label>
+          <label className="mb-1.5 block text-sm text-white/60">{content.order_form_coupon_label}</label>
           <div className="flex gap-2">
             <input
               className={`${input} uppercase`}
@@ -304,7 +304,7 @@ export default function OrderForm({
               type="button"
               onClick={applyCoupon}
               disabled={couponChecking || !couponInput.trim()}
-              className="shrink-0 rounded-xl border border-gold/40 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold transition hover:bg-gold/20 disabled:opacity-50"
+              className="shrink-0 rounded-[10px] border border-brand/40 bg-brand/10 px-5 py-3 text-sm font-semibold text-brand transition hover:bg-brand/20 disabled:opacity-50"
             >
               {couponChecking ? "…" : content.order_form_coupon_apply_button}
             </button>
@@ -320,17 +320,17 @@ export default function OrderForm({
 
       {/* Summary */}
       <div className="lg:col-span-2">
-        <div className="sticky top-24 rounded-2xl border border-line bg-ink-2 p-5">
-          <h3 className="font-display text-lg font-bold uppercase">{content.order_form_summary_heading}</h3>
-          <p className="mt-1 truncate text-sm text-muted">{productName}</p>
+        <div className="sticky top-24 rounded-2xl border border-white/10 bg-night p-5">
+          <h3 className="font-display text-lg font-extrabold text-white">{content.order_form_summary_heading}</h3>
+          <p className="mt-1 truncate text-sm text-white/55">{productName}</p>
 
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-sm text-muted">{content.order_form_quantity_label}</span>
+            <span className="text-sm text-white/60">{content.order_form_quantity_label}</span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="grid h-8 w-8 place-items-center rounded-lg border border-line text-lg leading-none hover:border-gold/50"
+                className="grid h-8 w-8 place-items-center rounded-lg border border-white/15 text-lg leading-none transition hover:border-brand/60"
               >
                 −
               </button>
@@ -338,16 +338,16 @@ export default function OrderForm({
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.min(99, q + 1))}
-                className="grid h-8 w-8 place-items-center rounded-lg border border-line text-lg leading-none hover:border-gold/50"
+                className="grid h-8 w-8 place-items-center rounded-lg border border-white/15 text-lg leading-none transition hover:border-brand/60"
               >
                 +
               </button>
             </div>
           </div>
 
-          <div className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+          <div className="mt-4 space-y-2 border-t border-white/10 pt-4 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted">{content.order_form_subtotal_label}</span>
+              <span className="text-white/60">{content.order_form_subtotal_label}</span>
               <span>{formatTaka(subtotal, currency)}</span>
             </div>
             {discount > 0 && (
@@ -357,12 +357,12 @@ export default function OrderForm({
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-muted">{content.order_form_delivery_label}</span>
+              <span className="text-white/60">{content.order_form_delivery_label}</span>
               <span>{formatTaka(delivery, currency)}</span>
             </div>
-            <div className="flex justify-between border-t border-line pt-2 text-base font-bold">
+            <div className="flex justify-between border-t border-white/10 pt-2 text-base font-bold">
               <span>{content.order_form_total_label}</span>
-              <span className="text-gold">{formatTaka(total, currency)}</span>
+              <span className="text-brand">{formatTaka(total, currency)}</span>
             </div>
           </div>
 
@@ -375,11 +375,11 @@ export default function OrderForm({
           <button
             type="submit"
             disabled={status === "loading"}
-            className="btn-gold mt-4 w-full rounded-xl py-3.5 font-bold uppercase tracking-wide disabled:opacity-60"
+            className="btn-brand mt-4 w-full py-3.5 text-base font-bold disabled:opacity-60"
           >
             {status === "loading" ? "Placing order…" : content.order_form_confirm_button}
           </button>
-          <p className="mt-3 text-center text-xs text-muted-2">
+          <p className="mt-3 text-center text-xs text-white/40">
             {content.order_form_cod_note}
           </p>
         </div>

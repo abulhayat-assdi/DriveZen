@@ -203,6 +203,77 @@ export const Ban = (p: P) => (
   </svg>
 );
 
+export const Play = (p: P) => (
+  <svg {...base({ ...p, fill: "currentColor", stroke: "none" })}>
+    <path d="M8 5.5v13a1 1 0 0 0 1.52.85l10.5-6.5a1 1 0 0 0 0-1.7L9.52 4.65A1 1 0 0 0 8 5.5" />
+  </svg>
+);
+
+export const Zap = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+  </svg>
+);
+
+export const Car = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10.5 15.4 6a2 2 0 0 0-1.7-1H8.1a2 2 0 0 0-1.8 1.1L4.5 10 2.6 11c-.4.3-.6.7-.6 1.1V16c0 .6.4 1 1 1h2" />
+    <circle cx="7" cy="17" r="2" />
+    <circle cx="17" cy="17" r="2" />
+    <path d="M9 17h6" />
+  </svg>
+);
+
+export const Package = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+    <path d="m7.5 4.5 9 5" />
+  </svg>
+);
+
+export const Wallet = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5" />
+    <path d="M16 13.5h.01" />
+  </svg>
+);
+
+export const ThumbsUp = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88" />
+  </svg>
+);
+
+export const Mail = (p: P) => (
+  <svg {...base(p)}>
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+);
+
+export const Alert = (p: P) => (
+  <svg {...base(p)}>
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+    <path d="M12 9v4M12 17h.01" />
+  </svg>
+);
+
+export const Armchair = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3" />
+    <path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z" />
+    <path d="M5 18v2M19 18v2" />
+  </svg>
+);
+
+export const Frown = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01" />
+  </svg>
+);
+
 export const Cart = (p: P) => (
   <svg {...base(p)}>
     <circle cx="9" cy="21" r="1" />

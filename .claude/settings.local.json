@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --use-npm --eslint --no-turbopack --yes)",
+      "Bash(npx --yes create-next-app@latest drivezen --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --use-npm --eslint --no-turbopack --yes)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(node \"C:/Users/abulh/AppData/Local/Temp/claude/D--Shaibal-Sir-Landing-Page/06c46668-bace-4b2a-b6c9-cf04d71fa1c4/scratchpad/genimg.mjs\")",
+      "Bash(npx tsx *)",
+      "Bash(curl -s -X POST http://localhost:3000/api/orders -H \"Content-Type: application/json\" -d '{\"name\":\"Test Rahim\",\"phone\":\"01712345678\",\"address\":\"House 5, Road 2, Dhanmondi, Dhaka\",\"area\":\"inside\",\"quantity\":2,\"note\":\"টেস্ট অর্ডার\"}')",
+      "Bash(curl -s -o /dev/null -w \"status=%{http_code} location=%header{location}\\\\n\" http://localhost:3000/admin/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"status=%{http_code} location=%header{location}\\\\n\" http://localhost:3000/admin/order)",
+      "Bash(curl -s -o /dev/null -w \"home=%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"dashboard=%{http_code} location=%header{location}\\\\n\" http://localhost:3000/admin/dashboard)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)",
+      "Bash(echo \"home=$\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/\\)\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/admin/login)",
+      "Bash(echo \"login=$\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/admin/login\\)\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/orders -H \"Content-Type: application/json\" -d '{\"name\":\"করিম উদ্দিন\",\"phone\":\"01812345678\",\"address\":\"গুলশান ২, ঢাকা\",\"area\":\"outside\",\"quantity\":1}')",
+      "Bash(rm -rf prisma/migrations prisma/dev.db prisma/dev.db-journal)",
+      "Bash(rm -f prisma/dev.db)",
+      "Bash(node \"C:/Users/abulh/AppData/Local/Temp/claude/D--Shaibal-Sir-Landing-Page/06c46668-bace-4b2a-b6c9-cf04d71fa1c4/scratchpad/genimg2.mjs\")"
+    ]
+  }
+}

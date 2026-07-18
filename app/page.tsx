@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getActiveProduct, getFaqs, getSettings } from "@/lib/data";
 import { getContent } from "@/lib/content";
-import { formatTaka, discountPercent, pad2, toWhatsAppNumber } from "@/lib/utils";
+import { formatTaka, toWhatsAppNumber } from "@/lib/utils";
 import SmoothScroll from "@/components/site/SmoothScroll";
 import FacebookPixel from "@/components/site/FacebookPixel";
 import Navbar from "@/components/site/Navbar";
@@ -11,34 +11,183 @@ import Hero from "@/components/site/Hero";
 import OrderForm from "@/components/site/OrderForm";
 import Faq from "@/components/site/Faq";
 import Gallery from "@/components/site/Gallery";
+import BeforeAfter from "@/components/site/BeforeAfter";
+import ReviewsCarousel from "@/components/site/ReviewsCarousel";
+import VideoLightbox from "@/components/site/VideoLightbox";
 import Reveal from "@/components/site/Reveal";
 import {
   Star,
   Whatsapp,
   Phone,
   Facebook,
-  MapPin,
+  Mail,
   ArrowRight,
+  Check,
+  Car,
+  Package,
+  Wallet,
+  Truck,
+  Shield,
+  Wrench,
+  Zap,
+  ThumbsUp,
+  Armchair,
+  Box,
+  Sparkle,
+  Frown,
+  Alert,
 } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
+const STATS = [
+  { icon: Car, value: "500+", label: "Aqua Owners Served" },
+  { icon: Package, value: "1000+", label: "Orders Delivered" },
+  { icon: Star, value: "4.9/5", label: "Customer Satisfaction" },
+];
+
+const PROBLEMS = [
+  {
+    icon: Armchair,
+    title: "হাত রাখার আরামদায়ক জায়গা নেই",
+    text: "লং ড্রাইভে হাত ঝুলিয়ে রাখতে রাখতে কাঁধ ও ঘাড়ে অস্বস্তি শুরু হয়।",
+  },
+  {
+    icon: Box,
+    title: "জিনিসপত্র রাখার জায়গা নেই",
+    text: "ফোন, মানিব্যাগ, চাবি—সব ছড়িয়ে থাকে সিটে, ড্যাশবোর্ডে বা কাপ হোল্ডারে।",
+  },
+  {
+    icon: Sparkle,
+    title: "Interior-টা কেমন যেন অসম্পূর্ণ লাগে",
+    text: "গাড়িটা ভালো, কিন্তু ভেতরে বসলে মনে হয় কিছু একটা এখনও Missing।",
+  },
+  {
+    icon: Frown,
+    title: "প্রতিদিনের ছোট Discomfort",
+    text: "একদিন সমস্যা না। কিন্তু প্রতিদিন একই অসুবিধা ধীরে ধীরে বিরক্তিতে পরিণত হয়।",
+  },
+];
+
+const SOLUTION_CHECKLIST = [
+  "Comfortable Arm Support",
+  "Hidden Storage Space",
+  "Factory-Like Premium Look",
+  "কয়েক মিনিটেই Installation",
+  "মজবুত ও টেকসই নির্মাণ",
+];
+
+const FIT_CHECKLIST = [
+  "Factory-Like Appearance",
+  "Dashboard-এ কোনো কাটাছেঁড়া লাগবে না",
+  "কোনো Drilling লাগবে না",
+  "শক্তভাবে বসে থাকবে",
+  "Interior-এর সাথে মানানসই Design",
+];
+
+// Placeholder reviews — add/remove/edit entries here; the carousel handles any count.
 const REVIEWS = [
   {
-    name: "Ferdous Kabir",
-    text: "Really effective for Aqua users — I've been using it for a month. Great fit and a premium look.",
-    car: "Toyota Aqua",
+    name: "Mahmudul Hasan",
+    text: "Driving comfort has improved so much. Storage space is a huge bonus!",
+    tag: "Toyota Aqua Owner",
   },
   {
-    name: "Rakib Hasan",
-    text: "Fitted without any drilling and it blends right into the interior. Delivery was fast too.",
-    car: "Aqua Owner",
+    name: "Sadia Rahman",
+    text: "Looks premium and fits perfectly. Feels like it came with the car from factory.",
+    tag: "Toyota Aqua Owner",
   },
   {
-    name: "Sabbir Ahmed",
-    text: "Finally an armrest for the passenger side as well — so much more comfortable. Great service.",
-    car: "Verified Buyer",
+    name: "Rashed Ahmed",
+    text: "Installation was super easy. Quality is excellent. Highly recommended!",
+    tag: "Verified Buyer",
   },
+  {
+    name: "Tanvir Islam",
+    text: "লং ড্রাইভে হাতের আরাম পুরো বদলে গেছে। Highly satisfied!",
+    tag: "Toyota Aqua Owner",
+  },
+  {
+    name: "Nusrat Jahan",
+    text: "Storage space-টা দারুণ কাজের। ফোন আর ওয়ালেট এখন এক জায়গায় থাকে।",
+    tag: "Verified Buyer",
+  },
+  {
+    name: "Imran Chowdhury",
+    text: "Delivery ছিল দ্রুত, প্যাকেজিং ভালো। Armrest-এর ফিনিশিংটা আসলেই premium।",
+    tag: "Toyota Aqua Owner",
+  },
+  {
+    name: "Farhan Rahman",
+    text: "দাম অনুযায়ী quality অসাধারণ। Aqua-র interior-এর সাথে perfectly match করে।",
+    tag: "Verified Buyer",
+  },
+  {
+    name: "Sharmin Akter",
+    text: "Installation নিজেই করেছি ৫ মিনিটে। মনে হয় factory fitted।",
+    tag: "Toyota Aqua Owner",
+  },
+];
+
+const WHY_CHOOSE = [
+  { icon: Wrench, title: "Perfect Aqua Fit", text: "Toyota Aqua-এর জন্য বিশেষভাবে তৈরি।" },
+  { icon: Shield, title: "Quality Tested", text: "মজবুত ও টেকসই।" },
+  { icon: Wallet, title: "Cash On Delivery", text: "পণ্য হাতে পেয়ে টাকা দিন।" },
+  { icon: Truck, title: "Fast Nationwide Delivery", text: "সারা বাংলাদেশে ডেলিভারি।" },
+];
+
+const INCLUDED = [
+  "Premium Aqua Armrest",
+  "Hidden Storage Compartment",
+  "Installation Guide",
+  "Delivery Support",
+  "Cash On Delivery",
+];
+
+// Placeholder FAQ from the redesign doc — shown only if no FAQs exist in admin.
+const FALLBACK_FAQS = [
+  {
+    id: "f1",
+    question: "এটা কি সব Toyota Aqua মডেলে ফিট হয়?",
+    answer: "হ্যাঁ, DriveZen Armrest Toyota Aqua-এর জন্য বিশেষভাবে ডিজাইন করা এবং সব সাধারণ Aqua মডেলে ফিট হয়।",
+  },
+  {
+    id: "f2",
+    question: "ডেলিভারিতে কত সময় লাগে?",
+    answer: "সাধারণত সারা বাংলাদেশে ২-৪ কর্মদিবসের মধ্যে ডেলিভারি হয়।",
+  },
+  {
+    id: "f3",
+    question: "Installation কি কঠিন?",
+    answer: "না, কোনো টুল বা ড্রিলিং ছাড়াই কয়েক মিনিটে নিজে ইনস্টল করতে পারবেন।",
+  },
+  {
+    id: "f4",
+    question: "Cash On Delivery আছে কি?",
+    answer: "হ্যাঁ, পণ্য হাতে পেয়ে টাকা পরিশোধ করতে পারবেন।",
+  },
+  {
+    id: "f5",
+    question: "Warranty আছে কি?",
+    answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের মানি-ব্যাক গ্যারান্টি আছে।",
+  },
+];
+
+const GALLERY_CAPTIONS = ["Front View", "Side View", "Open Storage View", "Installed In Aqua"];
+const GALLERY_FALLBACK = [
+  "/seed/armrest-1.jpg",
+  "/seed/armrest-2.jpg",
+  "/seed/armrest-3.jpg",
+  "/seed/highlight-1.jpg",
+];
+
+const CUSTOMER_PHOTOS = [
+  "/seed/armrest-1.jpg",
+  "/seed/highlight-1.jpg",
+  "/seed/armrest-2.jpg",
+  "/seed/highlight-2.jpg",
+  "/seed/armrest-3.jpg",
+  "/seed/highlight-3.jpg",
 ];
 
 export default async function Home() {
@@ -53,9 +202,9 @@ export default async function Home() {
     return (
       <main className="grid min-h-screen place-items-center px-6 text-center">
         <div>
-          <h1 className="font-display text-2xl font-bold uppercase">No product found</h1>
-          <p className="mt-2 text-muted">Add a product in the admin panel and set it Active.</p>
-          <Link href="/admin/dashboard" className="btn-gold mt-6 inline-flex rounded-full px-6 py-2.5 font-semibold">
+          <h1 className="font-display text-2xl font-extrabold">No product found</h1>
+          <p className="mt-2 text-white/60">Add a product in the admin panel and set it Active.</p>
+          <Link href="/admin/dashboard" className="btn-brand mt-6 px-6 py-2.5">
             Go to admin
           </Link>
         </div>
@@ -64,296 +213,502 @@ export default async function Home() {
   }
 
   const c = settings.currency;
-  const discount = discountPercent(product.price, product.oldPrice);
   const wa = `https://wa.me/${toWhatsAppNumber(settings.whatsapp)}`;
   const priceLabel = formatTaka(product.price, c);
-  const heroImages = Array.from(
-    new Set([product.heroImage, ...product.images.map((i) => i.url)].filter(Boolean) as string[])
-  );
+  const heroImage = product.heroImage || "/seed/armrest-hero.jpg";
+  const galleryItems = GALLERY_CAPTIONS.map((caption, i) => ({
+    caption,
+    url: product.images[i]?.url ?? GALLERY_FALLBACK[i],
+  }));
+  const faqItems = faqs.length > 0 ? faqs : FALLBACK_FAQS;
 
   return (
-    <div id="top">
+    <div>
       {settings.fbPixelId && <FacebookPixel pixelId={settings.fbPixelId} />}
       <SmoothScroll />
-      <Navbar brandName={settings.brandName} logoUrl={settings.logoUrl} whatsapp={settings.whatsapp} content={content} />
-      <FloatingCTA whatsapp={settings.whatsapp} priceLabel={priceLabel} content={content} />
+      <Navbar brandName={settings.brandName} logoUrl={settings.logoUrl} whatsapp={settings.whatsapp} />
+      <FloatingCTA whatsapp={settings.whatsapp} priceLabel={priceLabel} />
 
-      <Hero
-        images={heroImages}
-        kicker={settings.heroKicker || settings.tagline}
-        headline={settings.heroHeadline || product.tagline}
-        productName={product.name}
-        priceLabel={priceLabel}
-        oldPriceLabel={product.oldPrice ? formatTaka(product.oldPrice, c) : null}
-        discount={discount}
-        badge={product.badge}
-        content={content}
-      />
+      {/* 1. HERO */}
+      <Hero image={heroImage} />
 
-      {/* Statement */}
-      <section className="bg-black py-8 sm:py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-8">
-          <Reveal>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-5">
-              {product.priceNote || content.statement_eyebrow_fallback}
-            </p>
-            <h2 className="display-xl text-4xl sm:text-6xl">
-              {content.statement_heading}
+      {/* 2. TRUST / STATS BAR */}
+      <section className="border-y border-white/10 bg-night-2">
+        <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-10">
+          <Reveal className="grid grid-cols-3 divide-x divide-white/10">
+            {STATS.map((s) => (
+              <div key={s.label} className="flex flex-col items-center gap-1.5 px-2 text-center sm:gap-2.5">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/15 text-brand sm:h-12 sm:w-12">
+                  <s.icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                </span>
+                <span className="font-display text-xl font-extrabold text-white sm:text-3xl">{s.value}</span>
+                <span className="text-[11px] leading-tight text-white/55 sm:text-sm">{s.label}</span>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+        <Reveal className="border-t border-white/10 bg-night">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-5 py-3.5 text-xs font-semibold text-white/80 sm:text-sm">
+            <span className="inline-flex items-center gap-2">
+              <Wallet className="h-4 w-4 text-brand" /> 7-Day Money Back Guarantee
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Truck className="h-4 w-4 text-brand" /> Nationwide Delivery
+            </span>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* 3. PROBLEM SECTION */}
+      <section className="bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2
+              className="font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.6rem)" }}
+            >
+              আপনার Aqua-তেও কি এই <span className="text-brand">সমস্যাগুলো</span> হয়?
             </h2>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted sm:mt-6">
-              {product.description}
+            <p className="mt-3 text-base leading-relaxed text-tmuted">
+              ছোট ছোট অসুবিধা, কিন্তু প্রতিদিনের Driving Experience-টা একটু একটু করে নষ্ট করে দেয়।
             </p>
+          </Reveal>
+
+          <div className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-2 lg:grid-cols-4">
+            {PROBLEMS.map((p, i) => (
+              <Reveal key={p.title} delay={i * 80} className="card-light p-6 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)]">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand/12 text-brand">
+                  <p.icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-4 font-display text-base font-bold leading-snug text-tdark">{p.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-tmuted">{p.text}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SOLUTION SECTION */}
+      <section id="features" className="scroll-mt-20 border-t border-tline bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <Reveal>
+            <p className="eyebrow">The Perfect Solution</p>
+            <h2
+              className="mt-3 font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.6rem)" }}
+            >
+              একটা ছোট Upgrade, পুরো Driving Experience <span className="text-brand">বদলে দেয়</span>
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-tmuted">
+              DriveZen Premium Armrest শুধু একটা Accessory নয়।
+              <br />
+              এটা Comfort, Storage এবং Premium Feel—তিনটারই একটি Smart Combination।
+            </p>
+
+            <ul className="mt-6 space-y-3">
+              {SOLUTION_CHECKLIST.map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-white">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="font-semibold text-tdark">{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-7 rounded-2xl border border-brand/25 bg-brand/8 p-5">
+              <h3 className="font-display text-base font-bold text-tdark">কেন এটা আলাদা?</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-tmuted">
+                কারণ এটা কোনো Universal Product নয়।
+                <br />
+                এটা শুধুমাত্র Toyota Aqua-এর Interior মাথায় রেখে ডিজাইন করা হয়েছে।
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <Gallery items={galleryItems} />
           </Reveal>
         </div>
       </section>
 
-      {/* Features / included */}
-      {product.features.length > 0 && (
-        <section id="features" className="border-y border-white/10 bg-ink-2 py-8 sm:py-14">
-          <div className="mx-auto max-w-7xl px-4 sm:px-8">
-            <Reveal className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-4">
-                {content.features_eyebrow}
-              </p>
-              <h2 className="display-xl text-4xl sm:text-5xl">{content.features_heading}</h2>
-              <p className="mt-3 text-muted sm:mt-4">{product.shortDesc}</p>
-            </Reveal>
-
-            <div className="mt-6 grid gap-x-8 gap-y-5 sm:mt-10 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-8">
-              {product.features.map((f, i) => (
-                <Reveal
-                  key={f.id}
-                  delay={i * 50}
-                  className="flex items-start gap-4 border-t border-white/10 pt-5 sm:pt-6"
+      {/* 5. PERFECT FIT + SEE THE DIFFERENCE */}
+      <section className="bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto max-w-6xl space-y-10 sm:space-y-14">
+          {/* Perfect fit — dark card */}
+          <Reveal className="card-dark overflow-hidden rounded-3xl">
+            <div className="grid items-center gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:gap-12">
+              <div>
+                <p className="eyebrow">Perfect Fit Guarantee</p>
+                <h2
+                  className="mt-3 font-display font-extrabold leading-tight text-white"
+                  style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.4rem)" }}
                 >
-                  <span className="font-display text-sm font-bold text-gold">{pad2(i + 1)}</span>
-                  <p className="text-lg leading-snug text-fg/90">{f.text}</p>
+                  Toyota Aqua-এর জন্যই <span className="text-brand">বানানো</span>
+                </h2>
+                <p className="mt-3 text-base leading-relaxed text-white/65">
+                  এমনভাবে Fit হবে, যেন Factory থেকেই গাড়ির অংশ ছিল।
+                </p>
+
+                <ul className="mt-6 space-y-3">
+                  {FIT_CHECKLIST.map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand/20 text-brand">
+                        <Check className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="font-medium text-white/90">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="mt-6 font-display text-lg font-bold text-brand">
+                  দেখতেও Factory-এর, অনুভূতিতেও Factory-এর।
+                </p>
+              </div>
+
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl glow-brand">
+                <Image
+                  src={product.images[0]?.url ?? "/seed/armrest-1.jpg"}
+                  alt="DriveZen Premium Armrest — perfect fit for Toyota Aqua"
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  quality={85}
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Before / after slider */}
+          <Reveal className="mx-auto max-w-4xl">
+            <h2
+              className="text-center font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.4rem)" }}
+            >
+              See The <span className="text-brand">Difference</span>
+            </h2>
+            <div className="mt-6 sm:mt-8">
+              <BeforeAfter beforeSrc="/seed/highlight-2.jpg" afterSrc="/seed/highlight-1.jpg" />
+            </div>
+            <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+              <div className="flex flex-wrap justify-center gap-2">
+                {["Empty", "Basic", "Less Organized"].map((t) => (
+                  <span key={t} className="chip-light !text-tmuted">{t}</span>
+                ))}
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {["Premium", "Comfortable", "Organized"].map((t) => (
+                  <span key={t} className="chip-light border-brand/40 bg-brand/10 !text-brand">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 6. INSTALLS IN MINUTES — VIDEO */}
+      <section id="install" className="scroll-mt-20 border-t border-tline bg-white px-5 py-12 sm:py-20">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2 lg:gap-14">
+          <Reveal>
+            <VideoLightbox thumbnail="/seed/highlight-3.jpg" videoUrl={null} />
+          </Reveal>
+
+          <Reveal delay={120}>
+            <h2
+              className="font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.6rem)" }}
+            >
+              Installs In <span className="text-brand">Minutes</span>
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-tmuted">
+              দেখুন কত সহজে DriveZen Armrest আপনার Toyota Aqua-তে বসে যায়।
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2.5">
+              {[
+                { icon: Wrench, label: "No Special Tools Required" },
+                { icon: Zap, label: "Quick Setup" },
+                { icon: ThumbsUp, label: "Beginner Friendly" },
+              ].map((f) => (
+                <span key={f.label} className="chip-light">
+                  <f.icon className="h-4 w-4 text-brand" /> {f.label}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 7. TESTIMONIALS */}
+      <section id="reviews" className="scroll-mt-20 border-t border-tline bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2
+              className="font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.6rem)" }}
+            >
+              What <span className="text-brand">Aqua Owners</span> Say
+            </h2>
+          </Reveal>
+
+          {/* Review carousel — auto-scrolls every 4s, arrows + swipe, hold to pause */}
+          <Reveal delay={80} className="mt-8 sm:mt-12">
+            <ReviewsCarousel reviews={REVIEWS} />
+          </Reveal>
+
+          {/* Customer photo strip */}
+          <Reveal className="mt-8 rounded-3xl bg-night p-6 sm:mt-12 sm:p-8">
+            <p className="text-center font-display text-base font-bold text-white sm:text-lg">
+              Join Hundreds Of Aqua Owners Across Bangladesh
+            </p>
+            <div className="no-scrollbar mt-5 flex snap-x gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-6 sm:overflow-visible">
+              {CUSTOMER_PHOTOS.map((src, i) => (
+                <span
+                  key={src + i}
+                  className="relative block aspect-square w-24 shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 sm:w-auto"
+                >
+                  <Image
+                    src={src}
+                    alt={`DriveZen customer photo ${i + 1}`}
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 640px) 25vw, 15vw"
+                    quality={70}
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 8. WHY CHOOSE + EVERYTHING INCLUDED */}
+      <section className="border-t border-tline bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2 lg:gap-12">
+          <Reveal>
+            <h2
+              className="font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.5rem, 5vw, 2.2rem)" }}
+            >
+              Why Aqua Owners Choose <span className="text-brand">DriveZen</span>
+            </h2>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {WHY_CHOOSE.map((w, i) => (
+                <Reveal key={w.title} delay={i * 70} className="card-light p-5 hover:-translate-y-1">
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand/12 text-brand">
+                    <w.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-3 font-display text-sm font-bold text-tdark">{w.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-tmuted">{w.text}</p>
                 </Reveal>
               ))}
             </div>
+          </Reveal>
 
-            <div className="mt-6 sm:mt-8">
-              <a
-                href="#order"
-                className="btn-gold inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide"
-              >
-                {content.features_order_button} <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Highlights — editorial showcase */}
-      {product.highlights.length > 0 && (
-        <section id="highlights" className="bg-black py-8 sm:py-14">
-          <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-8 sm:space-y-14">
-            {product.highlights.map((h, i) => (
-              <Reveal
-                key={h.id}
-                className={`flex flex-col gap-5 md:flex-row md:items-center md:gap-14 ${
-                  i % 2 === 1 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="relative aspect-[4/3] w-full overflow-hidden md:w-3/5">
-                  <Image
-                    src={h.imageUrl || "/seed/highlight-1.jpg"}
-                    alt={h.title}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100vw, 60vw"
-                    quality={85}
-                    className="object-cover"
-                  />
-                </div>
-                <div className="md:w-2/5">
-                  <span className="font-display text-sm font-bold text-gold">{pad2(i + 1)}</span>
-                  <h3 className="mt-2 display-xl text-3xl sm:mt-3 sm:text-4xl">{h.title}</h3>
-                  <p className="mt-3 leading-relaxed text-muted sm:mt-4">{h.description}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <div className="mt-8 flex justify-center sm:mt-12">
-            <a
-              href="#order"
-              className="btn-gold inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide"
+          <Reveal delay={120} className="overflow-hidden rounded-3xl bg-brand p-6 text-white shadow-[0_20px_50px_-20px_rgba(245,130,10,0.6)] sm:p-8">
+            <h2
+              className="font-display font-extrabold leading-tight"
+              style={{ fontSize: "clamp(1.5rem, 5vw, 2.2rem)" }}
             >
-              {content.highlights_order_button} <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-        </section>
-      )}
-
-      {/* Gallery */}
-      {product.images.length > 0 && (
-        <section id="gallery" className="border-y border-white/10 bg-ink-2 py-8 sm:py-14">
-          <div className="mx-auto max-w-7xl px-4 sm:px-8">
-            <Reveal className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-4">{content.gallery_eyebrow}</p>
-              <h2 className="display-xl text-4xl sm:text-5xl">{content.gallery_heading}</h2>
-            </Reveal>
-            <div className="mt-5 sm:mt-8">
-              <Gallery images={product.images} />
-            </div>
-            <div className="mt-6 flex justify-center sm:mt-10">
-              <a
-                href="#order"
-                className="btn-gold inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide"
-              >
-                {content.gallery_order_button} <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Reviews */}
-      <section id="reviews" className="bg-black py-8 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-8">
-          <Reveal className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-4">{content.reviews_eyebrow}</p>
-            <h2 className="display-xl text-4xl sm:text-5xl">{content.reviews_heading}</h2>
-          </Reveal>
-          <div className="mt-5 grid gap-4 sm:mt-8 sm:gap-5 md:grid-cols-3">
-            {REVIEWS.map((r, i) => (
-              <Reveal key={r.name} delay={i * 80} className="card rounded-2xl p-6">
-                <div className="flex items-center gap-1 text-gold">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4" />
-                  ))}
-                </div>
-                <p className="mt-4 text-sm leading-relaxed text-fg/90">“{r.text}”</p>
-                <div className="mt-5 flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-white/10 font-semibold text-fg">
-                    {r.name.charAt(0)}
+              Everything Included
+            </h2>
+            <ul className="mt-5 space-y-3">
+              {INCLUDED.map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white text-brand">
+                    <Check className="h-3.5 w-3.5" />
                   </span>
-                  <div>
-                    <p className="text-sm font-semibold">{r.name}</p>
-                    <p className="text-xs text-muted">{r.car}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      {faqs.length > 0 && (
-        <section id="faq" className="bg-black py-8 sm:py-14">
-          <div className="mx-auto max-w-7xl px-4 sm:px-8">
-            <Reveal className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-4">{content.faq_eyebrow}</p>
-              <h2 className="display-xl text-4xl sm:text-5xl">{content.faq_heading}</h2>
-            </Reveal>
-            <div className="mt-5 sm:mt-8">
-              <Faq items={faqs} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CTA + Order — the final "Ready to upgrade?" section holds the order form directly */}
-      <section id="order" className="relative overflow-hidden border-y border-white/10 bg-ink-2 py-10 sm:py-16">
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/10 blur-[120px]" />
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-8">
-          <Reveal className="max-w-3xl text-center sm:mx-auto">
-            <h2 className="display-xl text-4xl sm:text-6xl">{content.cta_heading}</h2>
-            <p className="mt-3 text-muted sm:mt-4">{content.cta_subheading}</p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3 sm:mt-7">
-              <a href="#order-form" className="btn-gold rounded-full px-8 py-3.5 font-semibold uppercase tracking-wide">
-                {content.cta_order_button}
-              </a>
-              <a
-                href={wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-semibold uppercase tracking-wide"
-              >
-                <Whatsapp className="h-5 w-5 text-[#25D366]" /> {settings.whatsapp}
-              </a>
-            </div>
-          </Reveal>
-
-          <Reveal id="order-form" delay={100} className="mt-8 scroll-mt-24 rounded-3xl border border-line bg-black/40 p-4 sm:mt-10 sm:p-8">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:mb-4">{content.order_eyebrow}</p>
-            <h3 className="display-xl text-2xl sm:text-3xl">{content.order_heading}</h3>
-            <p className="mt-2 text-muted sm:mt-3">{content.order_subheading}</p>
-
-            <div className="mt-6 sm:mt-8">
-              <OrderForm
-                productId={product.id}
-                productName={product.name}
-                unitPrice={product.price}
-                deliveryInside={settings.deliveryInside}
-                deliveryOutside={settings.deliveryOutside}
-                currency={c}
-                whatsapp={settings.whatsapp}
-                content={content}
+                  <span className="font-semibold">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-white/25">
+              <Image
+                src={product.images[1]?.url ?? "/seed/armrest-2.jpg"}
+                alt="DriveZen Premium Armrest package"
+                fill
+                loading="lazy"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                quality={80}
+                className="object-cover"
               />
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12">
-          <div className="grid gap-8 md:grid-cols-3 md:gap-10">
-            <div>
-              <span className="font-display text-2xl font-extrabold uppercase tracking-[0.35em]">
-                {settings.brandName}
-              </span>
-              <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted sm:mt-5">
-                {settings.footerText || content.footer_default_text}
-              </p>
-            </div>
+      {/* 9. FAQ */}
+      <section id="faq" className="scroll-mt-20 border-t border-tline bg-paper px-5 py-12 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2
+              className="font-display font-extrabold leading-tight text-tdark"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.6rem)" }}
+            >
+              Frequently Asked <span className="text-brand">Questions</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={100} className="mt-8 sm:mt-12">
+            <Faq items={faqItems} />
+          </Reveal>
+        </div>
+      </section>
 
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{content.footer_contact_label}</h4>
-              <ul className="mt-3 space-y-2 text-sm sm:mt-5 sm:space-y-3">
-                <li>
-                  <a href={`tel:${settings.phone}`} className="inline-flex items-center gap-2 text-fg/90 hover:text-gold">
-                    <Phone className="h-4 w-4 text-gold" /> {settings.phone}
-                  </a>
-                </li>
-                <li>
-                  <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fg/90 hover:text-gold">
-                    <Whatsapp className="h-4 w-4 text-[#25D366]" /> WhatsApp: {settings.whatsapp}
-                  </a>
-                </li>
-                {settings.address && (
-                  <li className="inline-flex items-center gap-2 text-fg/90">
-                    <MapPin className="h-4 w-4 text-gold" /> {settings.address}
-                  </li>
-                )}
-                {settings.facebookUrl && (
-                  <li>
-                    <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fg/90 hover:text-gold">
-                      <Facebook className="h-4 w-4 text-[#1877F2]" /> {content.footer_facebook_label}
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </div>
+      {/* 10. FINAL CTA */}
+      <section className="relative overflow-hidden bg-night px-5 py-14 sm:py-24">
+        <div className="absolute inset-0">
+          <Image
+            src={heroImage}
+            alt=""
+            fill
+            loading="lazy"
+            sizes="100vw"
+            quality={60}
+            className="object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-night via-night/85 to-night" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/12 blur-[130px]" />
+        </div>
 
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{content.footer_explore_label}</h4>
-              <ul className="mt-3 space-y-2 text-sm sm:mt-5 sm:space-y-3">
-                <li><a href="#features" className="text-fg/90 hover:text-gold">{content.nav_features}</a></li>
-                <li><a href="#gallery" className="text-fg/90 hover:text-gold">{content.nav_gallery}</a></li>
-                <li><a href="#order" className="text-fg/90 hover:text-gold">{content.nav_order}</a></li>
-                <li><a href="#faq" className="text-fg/90 hover:text-gold">{content.nav_faq}</a></li>
-              </ul>
-            </div>
+        <Reveal className="relative mx-auto max-w-3xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-brand/50 bg-brand/15 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-brand">
+            <Alert className="h-4 w-4" /> Limited Stock Available
+          </span>
+
+          <h2
+            className="mt-5 font-display font-extrabold leading-tight text-white"
+            style={{ fontSize: "clamp(1.8rem, 6.5vw, 3rem)" }}
+          >
+            আপনার Aqua-টা এই Upgrade-এর <span className="text-brand">যোগ্য</span>
+          </h2>
+
+          <div className="mt-5 space-y-1 text-base leading-relaxed text-white/70 sm:text-lg">
+            <p>প্রতিদিন Drive করেন।</p>
+            <p>প্রতিদিন এই Interior-এই বসেন।</p>
+            <p>প্রতিদিন এই Comfort-টাই অনুভব করেন।</p>
+            <p className="pt-2">
+              তাহলে কেন এমন একটা Upgrade বাদ রাখবেন, যা প্রতিটি Drive-কে আরও Comfortable ও Premium
+              করে তুলতে পারে?
+            </p>
           </div>
 
-          <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 text-xs text-muted-2 sm:mt-8 sm:flex-row sm:pt-6">
-            <p>© {new Date().getFullYear()} {settings.brandName}. {content.footer_copyright_suffix}</p>
-            <Link href="/admin/dashboard" className="hover:text-muted">Admin</Link>
+          <a href="#order" className="btn-brand mt-8 px-9 py-4 text-lg">
+            আজই Aqua Upgrade করুন <ArrowRight className="h-5 w-5" />
+          </a>
+
+          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+            <span className="chip-dark">
+              <Star className="h-3.5 w-3.5 text-brand" /> Aqua Owner-দের পছন্দের Upgrade
+            </span>
+            {["Cash On Delivery", "Fast Delivery", "Perfect Aqua Fit"].map((t) => (
+              <span key={t} className="chip-dark">
+                <Check className="h-3.5 w-3.5 text-brand" /> {t}
+              </span>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ORDER FORM */}
+      <section id="order" className="scroll-mt-20 border-t border-white/10 bg-night-2 px-5 py-12 sm:py-20">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">{content.order_eyebrow}</p>
+            <h2
+              className="mt-3 font-display font-extrabold leading-tight text-white"
+              style={{ fontSize: "clamp(1.6rem, 5.5vw, 2.4rem)" }}
+            >
+              {content.order_heading}
+            </h2>
+            <p className="mt-3 text-white/60">{content.order_subheading}</p>
+          </Reveal>
+
+          <Reveal delay={100} className="mt-8 rounded-3xl border border-white/10 bg-night-2 p-4 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] sm:mt-10 sm:p-8">
+            <OrderForm
+              productId={product.id}
+              productName={product.name}
+              unitPrice={product.price}
+              deliveryInside={settings.deliveryInside}
+              deliveryOutside={settings.deliveryOutside}
+              currency={c}
+              whatsapp={settings.whatsapp}
+              content={content}
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 11. FOOTER */}
+      <footer id="contact" className="scroll-mt-20 border-t border-white/10 bg-night">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+          <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+            <div>
+              <span className="font-display text-2xl font-extrabold tracking-tight text-white">
+                Drive<span className="text-brand">Z</span>en
+              </span>
+              <p className="mt-2 text-sm text-white/55">Drive Better. Live Comfortably.</p>
+            </div>
+
+            <ul className="grid grid-cols-1 gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
+              <li>
+                <a
+                  href={settings.facebookUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 text-white/80 transition-colors duration-300 hover:text-brand"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/5">
+                    <Facebook className="h-4 w-4 text-[#1877F2]" />
+                  </span>
+                  Facebook
+                </a>
+              </li>
+              <li>
+                <a
+                  href={wa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 text-white/80 transition-colors duration-300 hover:text-brand"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/5">
+                    <Whatsapp className="h-4 w-4 text-[#25D366]" />
+                  </span>
+                  WhatsApp: {settings.whatsapp}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`tel:${settings.phone}`}
+                  className="inline-flex items-center gap-2.5 text-white/80 transition-colors duration-300 hover:text-brand"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/5">
+                    <Phone className="h-4 w-4 text-brand" />
+                  </span>
+                  {settings.phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${settings.email || "hello@drivezen.com"}`}
+                  className="inline-flex items-center gap-2.5 text-white/80 transition-colors duration-300 hover:text-brand"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/5">
+                    <Mail className="h-4 w-4 text-brand" />
+                  </span>
+                  {settings.email || "hello@drivezen.com"}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row">
+            <p>© {new Date().getFullYear()} {settings.brandName}. All rights reserved.</p>
+            <Link href="/admin/dashboard" className="transition-colors duration-300 hover:text-white/70">
+              Admin
+            </Link>
           </div>
         </div>
       </footer>

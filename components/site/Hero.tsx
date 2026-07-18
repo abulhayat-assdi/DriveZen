@@ -1,130 +1,102 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowRight } from "@/components/icons";
+import { ArrowRight, Play, Check, Truck, Shield, Star } from "@/components/icons";
 
-export default function Hero({
-  images,
-  kicker,
-  headline,
-  productName,
-  priceLabel,
-  oldPriceLabel,
-  discount,
-  badge,
-  content,
-}: {
-  images: string[];
-  kicker: string;
-  headline: string;
-  productName: string;
-  priceLabel: string;
-  oldPriceLabel?: string | null;
-  discount: number;
-  badge?: string | null;
-  content: Record<string, string>;
-}) {
-  const slides = images.length ? images : ["/seed/armrest-hero.jpg"];
-  const [i, setI] = useState(0);
+const CHIPS = [
+  "Cash On Delivery",
+  "সারা বাংলাদেশে Delivery",
+  "Toyota Aqua-এর জন্য Perfect Fit",
+];
 
-  useEffect(() => {
-    if (slides.length < 2) return;
-    const t = setInterval(() => setI((v) => (v + 1) % slides.length), 6000);
-    return () => clearInterval(t);
-  }, [slides.length]);
+const SIDE_BADGES = [
+  { icon: Truck, label: "Fast Delivery" },
+  { icon: Shield, label: "Quality Tested" },
+  { icon: Star, label: "Customer Favorite" },
+];
 
+export default function Hero({ image }: { image: string }) {
   return (
-    <section id="hero" className="relative h-[100svh] min-h-[620px] w-full overflow-hidden">
-      {/* Background slides */}
-      {slides.map((src, idx) => (
-        <div
-          key={idx}
-          className="absolute inset-0 transition-opacity duration-[1200ms] ease-out"
-          style={{ opacity: idx === i ? 1 : 0 }}
-        >
-          <Image
-            src={src}
-            alt=""
-            fill
-            priority={idx === 0}
-            sizes="100vw"
-            quality={85}
-            className="object-cover"
-            style={{ transform: idx === i ? "scale(1.05)" : "scale(1)", transition: "transform 7s ease-out" }}
-          />
-        </div>
-      ))}
-      <div className="absolute inset-0 overlay-b" />
-
-      {/* Content */}
-      <div className="absolute inset-x-0 bottom-0 z-10">
-        <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-8 sm:pb-20">
-          <div className="max-w-3xl animate-fade-up">
-            {badge && (
-              <span className="mb-3 inline-block rounded-full border border-white/25 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/80 sm:mb-5">
-                {badge}
-              </span>
-            )}
-            <p className="mb-2 text-xs font-medium uppercase tracking-[0.3em] text-white/60 sm:mb-4">
-              {kicker}
-            </p>
-            <h1 className="display-xl text-[13vw] leading-[0.92] sm:text-7xl md:text-8xl">
-              {headline}
-            </h1>
-
-            <div className="mt-4 border-t border-white/15 pt-4 sm:mt-7 sm:pt-5">
-              <p className="font-display text-lg font-bold uppercase tracking-wide sm:text-xl">
-                {productName}
-              </p>
-              <div className="mt-1.5 flex flex-wrap items-center gap-3">
-                <span className="text-2xl font-semibold text-white sm:text-3xl">
-                  {content.hero_from_label} {priceLabel}
-                </span>
-                {oldPriceLabel && (
-                  <span className="text-base text-white/40 line-through">{oldPriceLabel}</span>
-                )}
-                {discount > 0 && (
-                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-gold-soft">
-                    {discount}% {content.hero_off_label}
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-3 sm:mt-6">
-                <a
-                  href="#order"
-                  className="btn-gold inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide"
-                >
-                  {content.hero_order_button} <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="#highlights"
-                  className="btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold uppercase tracking-wide"
-                >
-                  {content.hero_discover_button}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section id="top" className="relative overflow-hidden bg-night">
+      {/* Background image + overlays */}
+      <div className="absolute inset-0">
+        <Image
+          src={image}
+          alt="DriveZen Premium Armrest — Toyota Aqua interior"
+          fill
+          priority
+          sizes="100vw"
+          quality={85}
+          className="animate-hero-zoom object-cover object-center opacity-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-night via-night/80 to-night/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-night via-transparent to-night/60" />
+        <div className="pointer-events-none absolute -right-24 top-1/3 h-80 w-80 rounded-full bg-brand/15 blur-[130px]" />
       </div>
 
-      {/* Slide dots */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setI(idx)}
-              aria-label={`Slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all ${
-                idx === i ? "w-6 bg-gold" : "w-1.5 bg-white/40"
-              }`}
-            />
+      <div className="relative mx-auto flex max-w-7xl flex-col px-5 pb-12 pt-28 sm:px-8 sm:pt-36 lg:flex-row lg:items-center lg:gap-10 lg:pb-24">
+        {/* Text */}
+        <div className="max-w-2xl">
+          <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-brand">
+            Premium Toyota Aqua Armrest
+          </span>
+
+          <h1
+            className="animate-fade-up mt-5 font-display font-extrabold leading-[1.12] text-white [animation-delay:100ms]"
+            style={{ fontSize: "clamp(2rem, 7.5vw, 3.6rem)" }}
+          >
+            আপনার Aqua-টা কি সত্যিই <span className="text-brand">Complete</span>?
+          </h1>
+
+          <div className="animate-fade-up mt-5 space-y-3 text-base leading-relaxed text-white/75 [animation-delay:200ms] sm:text-lg">
+            <p>মাইলেজ নিয়ে কোনো অভিযোগ নেই। ইঞ্জিন নিয়েও না।</p>
+            <p>
+              কিন্তু প্রতিদিন গাড়িতে উঠে যদি হাত রাখার একটা আরামদায়ক জায়গা খুঁজতে হয়,
+              তাহলে হয়তো আপনার Aqua-তে এখনও একটা গুরুত্বপূর্ণ জিনিসের অভাব আছে।
+            </p>
+            <p className="text-white">
+              <strong className="font-bold text-brand">DriveZen Premium Armrest</strong> সেই
+              অভাবটাই পূরণ করে।
+            </p>
+          </div>
+
+          <div className="animate-fade-up mt-7 flex flex-col gap-3 [animation-delay:300ms] sm:flex-row">
+            <a href="#order" className="btn-brand px-7 py-3.5 text-base">
+              আমার Aqua Upgrade করবো <ArrowRight className="h-5 w-5" />
+            </a>
+            <a href="#install" className="btn-ghost-dark px-7 py-3.5 text-base">
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-white/10">
+                <Play className="h-3.5 w-3.5" />
+              </span>
+              Installation Video দেখুন
+            </a>
+          </div>
+
+          <div className="animate-fade-up mt-7 flex flex-wrap gap-2.5 [animation-delay:400ms]">
+            {CHIPS.map((c) => (
+              <span key={c} className="chip-dark">
+                <Check className="h-3.5 w-3.5 text-brand" /> {c}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Side badges — desktop only */}
+        <div className="ml-auto hidden shrink-0 flex-col gap-4 lg:flex">
+          {SIDE_BADGES.map((b, i) => (
+            <div
+              key={b.label}
+              className="animate-fade-up flex w-44 flex-col items-center gap-2.5 rounded-2xl border border-white/10 bg-night-2/80 px-4 py-5 text-center backdrop-blur-sm"
+              style={{ animationDelay: `${450 + i * 120}ms` }}
+            >
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand/15 text-brand">
+                <b.icon className="h-5 w-5" />
+              </span>
+              <span className="text-sm font-semibold text-white/90">{b.label}</span>
+            </div>
           ))}
         </div>
-      )}
+      </div>
     </section>
   );
 }

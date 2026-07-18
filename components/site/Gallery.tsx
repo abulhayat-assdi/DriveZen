@@ -1,76 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { Close } from "@/components/icons";
 
-type Img = { id: string; url: string; alt: string };
+export type GalleryItem = { url: string; caption: string };
 
-export default function Gallery({ images }: { images: Img[] }) {
-  const [active, setActive] = useState<number | null>(null);
+export default function Gallery({ items }: { items: GalleryItem[] }) {
+  const [active, setActive] = useState(0);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (active === null) return;
-      if (e.key === "Escape") setActive(null);
-      if (e.key === "ArrowRight") setActive((i) => (i === null ? i : (i + 1) % images.length));
-      if (e.key === "ArrowLeft")
-        setActive((i) => (i === null ? i : (i - 1 + images.length) % images.length));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [active, images.length]);
-
-  if (!images.length) return null;
+  if (!items.length) return null;
+  const current = items[Math.min(active, items.length - 1)];
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
-        {images.map((img, i) => (
+    <div>
+      {/* Main image */}
+      <div className="card-light relative aspect-[4/3] overflow-hidden !p-0">
+        <Image
+          key={current.url}
+          src={current.url}
+          alt={current.caption}
+          fill
+          loading="lazy"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          quality={85}
+          className="animate-fade-up rounded-2xl object-cover"
+        />
+        <span className="absolute bottom-3 left-3 rounded-full bg-black/70 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+          {current.caption}
+        </span>
+      </div>
+
+      {/* Thumbnails — swipeable strip on mobile, grid on larger screens */}
+      <div className="no-scrollbar -mx-1 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 sm:grid sm:grid-cols-4 sm:overflow-visible">
+        {items.map((it, i) => (
           <button
-            key={img.id}
+            key={it.url + i}
+            type="button"
             onClick={() => setActive(i)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-surface"
+            className={`group w-[38%] shrink-0 snap-start text-left transition-all duration-300 sm:w-auto ${
+              active === i ? "" : "opacity-80 hover:opacity-100"
+            }`}
+            aria-label={it.caption}
           >
-            <Image
-              src={img.url}
-              alt={img.alt}
-              fill
-              loading="lazy"
-              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 400px"
-              quality={80}
-              className="object-cover transition duration-500 group-hover:scale-105"
-            />
-            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition group-hover:opacity-100" />
+            <span
+              className={`relative block aspect-[4/3] overflow-hidden rounded-xl border-2 transition-colors duration-300 ${
+                active === i ? "border-brand" : "border-transparent"
+              }`}
+            >
+              <Image
+                src={it.url}
+                alt={it.caption}
+                fill
+                loading="lazy"
+                sizes="(max-width: 640px) 40vw, 12vw"
+                quality={70}
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </span>
+            <span
+              className={`mt-1.5 block text-center text-[11px] font-semibold transition-colors duration-300 sm:text-xs ${
+                active === i ? "text-brand" : "text-tmuted"
+              }`}
+            >
+              {it.caption}
+            </span>
           </button>
         ))}
       </div>
-
-      {active !== null && (
-        <div
-          className="fixed inset-0 z-[60] grid place-items-center bg-black/90 p-4 backdrop-blur"
-          onClick={() => setActive(null)}
-        >
-          <button
-            className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full border border-white/20 text-white"
-            onClick={() => setActive(null)}
-            aria-label="Close"
-          >
-            <Close className="h-6 w-6" />
-          </button>
-          <Image
-            src={images[active].url}
-            alt={images[active].alt}
-            width={1600}
-            height={1200}
-            quality={85}
-            sizes="(max-width: 768px) 92vw, 80vw"
-            className="max-h-[85vh] max-w-full rounded-xl object-contain"
-            style={{ width: "auto", height: "auto" }}
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
-    </>
+    </div>
   );
 }

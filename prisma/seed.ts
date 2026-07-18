@@ -111,32 +111,29 @@ async function main() {
   await prisma.faq.createMany({
     data: [
       {
-        question: "Will this fit my car?",
+        question: "এটা কি সব Toyota Aqua মডেলে ফিট হয়?",
         answer:
-          "This armrest is customised for the Toyota Aqua. For other models, message us on WhatsApp and we'll confirm fitment for you.",
+          "হ্যাঁ, DriveZen Armrest Toyota Aqua-এর জন্য বিশেষভাবে ডিজাইন করা এবং সব সাধারণ Aqua মডেলে ফিট হয়।",
         sortOrder: 0,
       },
       {
-        question: "Do I need to drill to install it?",
-        answer:
-          "No. It's completely plug-and-play — no drilling or cutting required. You can fit it yourself in minutes.",
+        question: "ডেলিভারিতে কত সময় লাগে?",
+        answer: "সাধারণত সারা বাংলাদেশে ২-৪ কর্মদিবসের মধ্যে ডেলিভারি হয়।",
         sortOrder: 1,
       },
       {
-        question: "How long does delivery take?",
-        answer: "Usually 1–2 days inside Dhaka and 2–4 days outside Dhaka.",
+        question: "Installation কি কঠিন?",
+        answer: "না, কোনো টুল বা ড্রিলিং ছাড়াই কয়েক মিনিটে নিজে ইনস্টল করতে পারবেন।",
         sortOrder: 2,
       },
       {
-        question: "How do I pay?",
-        answer:
-          "Cash on delivery is available — inspect the product when it arrives, then pay.",
+        question: "Cash On Delivery আছে কি?",
+        answer: "হ্যাঁ, পণ্য হাতে পেয়ে টাকা পরিশোধ করতে পারবেন।",
         sortOrder: 3,
       },
       {
-        question: "Is there any warranty or return?",
-        answer:
-          "Replacement/return is available for manufacturing defects. Call or WhatsApp us for details.",
+        question: "Warranty আছে কি?",
+        answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের মানি-ব্যাক গ্যারান্টি আছে।",
         sortOrder: 4,
       },
     ],
