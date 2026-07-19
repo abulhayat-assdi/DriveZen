@@ -3,13 +3,15 @@
 import { useState, useTransition } from "react";
 import { formatTaka } from "@/lib/utils";
 import { STATUS_META } from "./status";
-import { updateOrderStatus } from "./actions";
+import { updateOrderStatus, sendOrderToCourier } from "./actions";
 import OrderDetailModal, { type OrderDetail } from "./OrderDetailModal";
 import { ArrowRight, Check, Truck, X } from "@/components/icons";
 
 export default function OrderCard({ order }: { order: OrderDetail }) {
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
+  const [courierPending, startCourier] = useTransition();
+  const [courierError, setCourierError] = useState<string | null>(null);
   const meta = STATUS_META[order.status] ?? STATUS_META.new;
 
   function setStatus(status: string) {
@@ -17,6 +19,18 @@ export default function OrderCard({ order }: { order: OrderDetail }) {
       await updateOrderStatus(order.id, status);
     });
   }
+
+  function sendToCourier() {
+    if (!confirm(`Send order ${order.orderNumber} (${order.customerName}) to Steadfast courier?`)) return;
+    setCourierError(null);
+    startCourier(async () => {
+      const res = await sendOrderToCourier(order.id);
+      if (res.error) setCourierError(res.error);
+    });
+  }
+
+  const canSendToCourier =
+    !order.courierConsignmentId && order.status !== "cancelled" && order.status !== "confirmed";
 
   return (
     <>
@@ -44,6 +58,20 @@ export default function OrderCard({ order }: { order: OrderDetail }) {
             {order.quantity} pc · {order.area === "outside" ? "Outside Dhaka" : "Inside Dhaka"}
           </div>
         </div>
+
+        {canSendToCourier && (
+          <div className="flex shrink-0 flex-col items-end gap-1" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={sendToCourier}
+              disabled={courierPending}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-400 transition hover:bg-sky-500/20 disabled:opacity-50"
+            >
+              <Truck className="h-3.5 w-3.5" />
+              {courierPending ? "Sending…" : "Send to Courier"}
+            </button>
+            {courierError && <p className="max-w-[240px] text-right text-[11px] text-red-400">{courierError}</p>}
+          </div>
+        )}
 
         {order.status === "on_the_way" && (
           <div className="flex shrink-0 gap-2" onClick={(e) => e.stopPropagation()}>

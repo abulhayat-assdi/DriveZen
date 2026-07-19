@@ -28,6 +28,7 @@ export type OrderEditFields = {
   quantity: number;
   area: "inside" | "outside";
   status: string;
+  unitPrice: number;
 };
 
 export async function updateOrder(
@@ -53,10 +54,15 @@ export async function updateOrder(
     ? fields.status
     : order.status;
 
+  if (!Number.isFinite(fields.unitPrice) || fields.unitPrice < 0) {
+    return { error: "Please enter a valid unit price." };
+  }
+  const unitPrice = Math.round(fields.unitPrice);
+
   const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
   const deliveryCharge =
     area === "outside" ? settings?.deliveryOutside ?? order.deliveryCharge : settings?.deliveryInside ?? order.deliveryCharge;
-  const total = Math.max(0, order.unitPrice * quantity - order.discountAmount) + deliveryCharge;
+  const total = Math.max(0, unitPrice * quantity - order.discountAmount) + deliveryCharge;
 
   await prisma.order.update({
     where: { id },
@@ -67,6 +73,7 @@ export async function updateOrder(
       note: fields.note.trim() || null,
       quantity,
       area,
+      unitPrice,
       deliveryCharge,
       total,
       status,

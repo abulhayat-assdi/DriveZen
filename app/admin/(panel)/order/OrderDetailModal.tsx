@@ -17,6 +17,7 @@ export type OrderDetail = {
   quantity: number;
   unitPrice: number;
   deliveryCharge: number;
+  discountAmount: number;
   total: number;
   note: string | null;
   status: string;
@@ -46,6 +47,7 @@ export default function OrderDetailModal({
     quantity: order.quantity,
     area: order.area === "outside" ? "outside" : "inside",
     status: order.status,
+    unitPrice: order.unitPrice,
   });
   const [status, setStatus] = useState(order.status);
   const [pending, start] = useTransition();
@@ -113,6 +115,11 @@ export default function OrderDetailModal({
 
   const alreadySent = !!courier.consignmentId;
 
+  const safeUnitPrice = Number.isFinite(fields.unitPrice) ? Math.max(0, fields.unitPrice) : 0;
+  const safeQuantity = Number.isFinite(fields.quantity) ? Math.max(1, fields.quantity) : 1;
+  const liveTotal =
+    Math.max(0, safeUnitPrice * safeQuantity - order.discountAmount) + order.deliveryCharge;
+
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-3 backdrop-blur-sm sm:p-6" onClick={onClose}>
       <div
@@ -134,14 +141,20 @@ export default function OrderDetailModal({
         </div>
 
         <div className="space-y-5 p-5">
-          {/* Product / totals (read-only) */}
+          {/* Product / totals */}
           <div className="rounded-xl border border-line bg-ink/40 p-4 text-sm">
             <p className="text-muted">Product</p>
             <p className="font-medium">{order.productName}</p>
             <div className="mt-3 grid grid-cols-3 gap-3 text-xs">
               <div>
-                <p className="text-muted">Unit price</p>
-                <p className="font-semibold">{formatTaka(order.unitPrice)}</p>
+                <p className="mb-1 text-muted">Unit price (৳)</p>
+                <input
+                  type="number"
+                  min={0}
+                  className={`${input} px-2.5 py-1.5`}
+                  value={fields.unitPrice}
+                  onChange={(e) => set("unitPrice", Number(e.target.value))}
+                />
               </div>
               <div>
                 <p className="text-muted">Delivery</p>
@@ -149,7 +162,7 @@ export default function OrderDetailModal({
               </div>
               <div>
                 <p className="text-muted">Total</p>
-                <p className="font-semibold text-gold">{formatTaka(order.total)}</p>
+                <p className="font-semibold text-gold">{formatTaka(liveTotal)}</p>
               </div>
             </div>
             <p className="mt-3 text-xs text-muted-2">
