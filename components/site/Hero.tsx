@@ -20,11 +20,15 @@ export default function Hero({ image }: { image: string }) {
     <section id="top" className="relative overflow-hidden bg-night">
       {/* Background image + overlays */}
       <div className="absolute inset-0">
+        {/* LCP element: preloaded in <head> and loaded eagerly. `priority` is
+            deprecated in Next 16 in favour of the explicit pair below. */}
         <Image
           src={image}
           alt="DriveZen Premium Armrest — Toyota Aqua interior"
           fill
-          priority
+          preload
+          loading="eager"
+          fetchPriority="high"
           sizes="100vw"
           quality={85}
           className="animate-hero-zoom object-cover object-center opacity-60"

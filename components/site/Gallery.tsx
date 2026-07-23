@@ -13,8 +13,9 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
 
   return (
     <div>
-      {/* Main image */}
-      <div className="card-light relative aspect-[4/3] overflow-hidden !p-0">
+      {/* Main image — 4:5 portrait. The product shots are taller than they are
+          wide, so a landscape frame centre-crops the lid and cup holder away. */}
+      <div className="card-light relative aspect-[4/5] overflow-hidden !p-0">
         <Image
           key={current.url}
           src={current.url}
@@ -43,7 +44,7 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
             aria-label={it.caption}
           >
             <span
-              className={`relative block aspect-[4/3] overflow-hidden rounded-xl border-2 transition-colors duration-300 ${
+              className={`relative block aspect-[4/5] overflow-hidden rounded-xl border-2 transition-colors duration-300 ${
                 active === i ? "border-brand" : "border-transparent"
               }`}
             >
@@ -53,7 +54,7 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
                 fill
                 loading="lazy"
                 sizes="(max-width: 640px) 40vw, 12vw"
-                quality={70}
+                quality={75}
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </span>

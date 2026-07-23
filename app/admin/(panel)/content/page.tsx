@@ -16,7 +16,8 @@ export default async function ContentPage() {
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold">Content Management</h1>
         <p className="text-sm text-muted">
-          Edit every heading and button label shown on the landing page — no code needed.
+          Edit every heading, button label and section photo shown on the landing page — no
+          code needed. The hero image and the four gallery photos live under Products.
         </p>
       </div>
       <ContentEditor groups={CONTENT_GROUPS} fieldsByGroup={fieldsByGroup} initial={values} />

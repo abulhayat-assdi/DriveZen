@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { saveContent } from "./actions";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { ContentField } from "@/lib/content";
 
 const input =
@@ -62,7 +63,13 @@ export default function ContentEditor({
             {fieldsByGroup[g].map((f) => (
               <div key={f.key} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
                 <label className="mb-1.5 block text-sm text-muted">{f.label}</label>
-                {f.type === "textarea" ? (
+                {f.type === "image" ? (
+                  <ImageUpload
+                    value={values[f.key] || f.default}
+                    onChange={(url) => set(f.key, url ?? "")}
+                    label="Upload photo"
+                  />
+                ) : f.type === "textarea" ? (
                   <textarea
                     className={input}
                     rows={2}

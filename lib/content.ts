@@ -4,7 +4,7 @@ export type ContentField = {
   key: string;
   label: string;
   group: string;
-  type?: "text" | "textarea";
+  type?: "text" | "textarea" | "image";
   default: string;
 };
 
@@ -94,7 +94,58 @@ export const CONTENT_FIELDS: ContentField[] = [
   // Floating bar (mobile)
   { key: "floating_from_label", label: "Price prefix (\"From\")", group: "Floating Bar", default: "From" },
   { key: "floating_order_button", label: "\"Order now\" button", group: "Floating Bar", default: "Order now" },
+
+  // Section images — every landing-page photo that is not part of the product
+  // record itself. The hero image and the four gallery photos live on the
+  // product (Admin → Products), everything below is edited here.
+  {
+    key: "fit_image",
+    label: "\"Perfect Fit\" card photo — 4:3, shows the armrest fitted in the car",
+    group: "Section Images",
+    type: "image",
+    default: "/seed/dz-fit-light-2.webp",
+  },
+  {
+    key: "before_image",
+    label: "Before/After slider — BEFORE (console with no armrest)",
+    group: "Section Images",
+    type: "image",
+    default: "/seed/dz-before-console.webp",
+  },
+  {
+    key: "after_image",
+    label: "Before/After slider — AFTER (same view, armrest installed)",
+    group: "Section Images",
+    type: "image",
+    default: "/seed/dz-dark-cabin.webp",
+  },
+  {
+    key: "install_video_thumb",
+    label: "Installation video thumbnail — 16:9",
+    group: "Section Images",
+    type: "image",
+    default: "/seed/dz-driver-pov.webp",
+  },
+  {
+    key: "included_image",
+    label: "\"Everything Included\" card photo — 16:9",
+    group: "Section Images",
+    type: "image",
+    default: "/seed/dz-console-cup.webp",
+  },
+  { key: "customer_photo_1", label: "Customer photo strip 1 — square", group: "Section Images", type: "image", default: "/seed/dz-driver-pov.webp" },
+  { key: "customer_photo_2", label: "Customer photo strip 2 — square", group: "Section Images", type: "image", default: "/seed/dz-fit-light.webp" },
+  { key: "customer_photo_3", label: "Customer photo strip 3 — square", group: "Section Images", type: "image", default: "/seed/dz-dark-cabin.webp" },
+  { key: "customer_photo_4", label: "Customer photo strip 4 — square", group: "Section Images", type: "image", default: "/seed/dz-usb-ports.webp" },
+  { key: "customer_photo_5", label: "Customer photo strip 5 — square", group: "Section Images", type: "image", default: "/seed/dz-console-cup.webp" },
+  { key: "customer_photo_6", label: "Customer photo strip 6 — square", group: "Section Images", type: "image", default: "/seed/dz-fit-light-2.webp" },
 ];
+
+// Keys whose value is an image URL — used by the admin editor to swap the text
+// input for an uploader, and by the page to fall back when a value is cleared.
+export const CONTENT_IMAGE_KEYS: string[] = CONTENT_FIELDS.filter(
+  (f) => f.type === "image"
+).map((f) => f.key);
 
 export const CONTENT_GROUPS: string[] = Array.from(
   new Set(CONTENT_FIELDS.map((f) => f.group))
@@ -107,7 +158,11 @@ export async function getContent(): Promise<ContentMap> {
   const overrides = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   const result: ContentMap = {};
   for (const f of CONTENT_FIELDS) {
-    result[f.key] = overrides[f.key] ?? f.default;
+    const override = overrides[f.key];
+    // An image that was removed in the admin panel falls back to the packaged
+    // default so the section never renders a broken <Image src="">.
+    result[f.key] =
+      f.type === "image" && !override ? f.default : override ?? f.default;
   }
   return result;
 }

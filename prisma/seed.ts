@@ -58,14 +58,17 @@ async function main() {
         "Plug-and-play installation with no drilling or cutting — comfortable, stylish and premium.",
       description:
         "Does your Toyota Aqua only have a driver-side armrest, leaving your passenger without support? Not anymore. Our custom-fit premium armrest is designed exclusively for the Aqua — it blends seamlessly with your interior and adds comfort and style on every journey, from daily commutes to long drives.",
-      heroImage: "/seed/armrest-hero.jpg",
+      heroImage: "/seed/dz-hero-cabin.webp",
       isActive: true,
       sortOrder: 0,
+      // The four gallery slots, in the order the landing page captions them:
+      // Front View · Side View · Open Storage View · Installed In Aqua.
       images: {
         create: [
-          { url: "/seed/armrest-1.jpg", alt: "Premium armrest installed view", sortOrder: 0 },
-          { url: "/seed/armrest-2.jpg", alt: "Leather finish close-up", sortOrder: 1 },
-          { url: "/seed/armrest-3.jpg", alt: "Cup holder detail", sortOrder: 2 },
+          { url: "/seed/dz-studio-warm.webp", alt: "Premium armrest, lid open — front view", sortOrder: 0 },
+          { url: "/seed/dz-fit-light.webp", alt: "Armrest fitted between the front seats — side view", sortOrder: 1 },
+          { url: "/seed/dz-studio-open.webp", alt: "Open storage compartment with charging cable", sortOrder: 2 },
+          { url: "/seed/dz-usb-ports.webp", alt: "USB-A and USB-C ports, installed in a Toyota Aqua", sortOrder: 3 },
         ],
       },
       features: {
@@ -84,21 +87,21 @@ async function main() {
             title: "Perfect fitment",
             description:
               "Custom-designed for the Toyota Aqua — a precise fit against the centre console with zero movement.",
-            imageUrl: "/seed/highlight-1.jpg",
+            imageUrl: "/seed/dz-fit-light-2.webp",
             sortOrder: 0,
           },
           {
             title: "Premium leather finish",
             description:
               "Top-grade leather with clean stitching that stays like new through everyday use.",
-            imageUrl: "/seed/highlight-2.jpg",
+            imageUrl: "/seed/dz-dark-cabin.webp",
             sortOrder: 1,
           },
           {
             title: "Hassle-free installation",
             description:
               "No drills, no cutting — fit it yourself in minutes. Fully plug-and-play.",
-            imageUrl: "/seed/highlight-3.jpg",
+            imageUrl: "/seed/dz-studio-open.webp",
             sortOrder: 2,
           },
         ],

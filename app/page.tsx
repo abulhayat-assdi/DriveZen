@@ -173,21 +173,25 @@ const FALLBACK_FAQS = [
   },
 ];
 
+// Gallery captions pair with product.images[0..3] (Admin → Products → Gallery
+// images). The fallbacks below only show until those four slots are filled.
 const GALLERY_CAPTIONS = ["Front View", "Side View", "Open Storage View", "Installed In Aqua"];
 const GALLERY_FALLBACK = [
-  "/seed/armrest-1.jpg",
-  "/seed/armrest-2.jpg",
-  "/seed/armrest-3.jpg",
-  "/seed/highlight-1.jpg",
+  "/seed/dz-studio-warm.webp",
+  "/seed/dz-fit-light.webp",
+  "/seed/dz-studio-open.webp",
+  "/seed/dz-usb-ports.webp",
 ];
 
-const CUSTOMER_PHOTOS = [
-  "/seed/armrest-1.jpg",
-  "/seed/highlight-1.jpg",
-  "/seed/armrest-2.jpg",
-  "/seed/highlight-2.jpg",
-  "/seed/armrest-3.jpg",
-  "/seed/highlight-3.jpg",
+const HERO_FALLBACK = "/seed/dz-hero-cabin.webp";
+
+const CUSTOMER_PHOTO_KEYS = [
+  "customer_photo_1",
+  "customer_photo_2",
+  "customer_photo_3",
+  "customer_photo_4",
+  "customer_photo_5",
+  "customer_photo_6",
 ];
 
 export default async function Home() {
@@ -215,11 +219,12 @@ export default async function Home() {
   const c = settings.currency;
   const wa = `https://wa.me/${toWhatsAppNumber(settings.whatsapp)}`;
   const priceLabel = formatTaka(product.price, c);
-  const heroImage = product.heroImage || "/seed/armrest-hero.jpg";
+  const heroImage = product.heroImage || HERO_FALLBACK;
   const galleryItems = GALLERY_CAPTIONS.map((caption, i) => ({
     caption,
     url: product.images[i]?.url ?? GALLERY_FALLBACK[i],
   }));
+  const customerPhotos = CUSTOMER_PHOTO_KEYS.map((k) => content[k]);
   const faqItems = faqs.length > 0 ? faqs : FALLBACK_FAQS;
 
   return (
@@ -368,7 +373,7 @@ export default async function Home() {
 
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl glow-brand">
                 <Image
-                  src={product.images[0]?.url ?? "/seed/armrest-1.jpg"}
+                  src={content.fit_image}
                   alt="DriveZen Premium Armrest — perfect fit for Toyota Aqua"
                   fill
                   loading="lazy"
@@ -389,7 +394,7 @@ export default async function Home() {
               See The <span className="text-brand">Difference</span>
             </h2>
             <div className="mt-6 sm:mt-8">
-              <BeforeAfter beforeSrc="/seed/highlight-2.jpg" afterSrc="/seed/highlight-1.jpg" />
+              <BeforeAfter beforeSrc={content.before_image} afterSrc={content.after_image} />
             </div>
             <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
               <div className="flex flex-wrap justify-center gap-2">
@@ -413,7 +418,7 @@ export default async function Home() {
       <section id="install" className="scroll-mt-20 border-t border-tline bg-white px-5 py-12 sm:py-20">
         <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2 lg:gap-14">
           <Reveal>
-            <VideoLightbox thumbnail="/seed/highlight-3.jpg" videoUrl={null} />
+            <VideoLightbox thumbnail={content.install_video_thumb} videoUrl={null} />
           </Reveal>
 
           <Reveal delay={120}>
@@ -464,7 +469,7 @@ export default async function Home() {
               Join Hundreds Of Aqua Owners Across Bangladesh
             </p>
             <div className="no-scrollbar mt-5 flex snap-x gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-6 sm:overflow-visible">
-              {CUSTOMER_PHOTOS.map((src, i) => (
+              {customerPhotos.map((src, i) => (
                 <span
                   key={src + i}
                   className="relative block aspect-square w-24 shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 sm:w-auto"
@@ -475,7 +480,7 @@ export default async function Home() {
                     fill
                     loading="lazy"
                     sizes="(max-width: 640px) 25vw, 15vw"
-                    quality={70}
+                    quality={75}
                     className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </span>
@@ -527,7 +532,7 @@ export default async function Home() {
             </ul>
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-white/25">
               <Image
-                src={product.images[1]?.url ?? "/seed/armrest-2.jpg"}
+                src={content.included_image}
                 alt="DriveZen Premium Armrest package"
                 fill
                 loading="lazy"
@@ -566,7 +571,7 @@ export default async function Home() {
             fill
             loading="lazy"
             sizes="100vw"
-            quality={60}
+            quality={75}
             className="object-cover opacity-25"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-night via-night/85 to-night" />
