@@ -38,11 +38,11 @@ import {
   Wrench,
   Zap,
   ThumbsUp,
-  Armchair,
-  Box,
-  Sparkle,
-  Frown,
   Alert,
+  ArmSupportPerson,
+  OpenBox,
+  SparkleDuo,
+  TiredPerson,
 } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -55,22 +55,22 @@ const STATS = [
 
 const PROBLEMS = [
   {
-    icon: Armchair,
+    icon: ArmSupportPerson,
     title: "হাত রাখার আরামদায়ক জায়গা নেই",
     text: "লং ড্রাইভে হাত ঝুলিয়ে রাখতে রাখতে কাঁধ ও ঘাড়ে অস্বস্তি শুরু হয়।",
   },
   {
-    icon: Box,
+    icon: OpenBox,
     title: "জিনিসপত্র রাখার জায়গা নেই",
     text: "ফোন, মানিব্যাগ, চাবি—সব ছড়িয়ে থাকে সিটে, ড্যাশবোর্ডে বা কাপ হোল্ডারে।",
   },
   {
-    icon: Sparkle,
+    icon: SparkleDuo,
     title: "Interior-টা কেমন যেন অসম্পূর্ণ লাগে",
     text: "গাড়িটা ভালো, কিন্তু ভেতরে বসলে মনে হয় কিছু একটা এখনও Missing।",
   },
   {
-    icon: Frown,
+    icon: TiredPerson,
     title: "প্রতিদিনের ছোট Discomfort",
     text: "একদিন সমস্যা না। কিন্তু প্রতিদিন একই অসুবিধা ধীরে ধীরে বিরক্তিতে পরিণত হয়।",
   },

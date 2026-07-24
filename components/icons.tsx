@@ -281,6 +281,39 @@ export const Frown = (p: P) => (
   </svg>
 );
 
+export const ArmSupportPerson = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="6" r="3" />
+    <path d="M4.5 21v-3.5A4.5 4.5 0 0 1 9 13h0a4.5 4.5 0 0 1 4.5 4.5V21" />
+    <path d="M13.5 16h5a1.5 1.5 0 0 1 1.5 1.5v0A1.5 1.5 0 0 1 18.5 19H15" />
+    <path d="M18.5 19v2" />
+  </svg>
+);
+
+export const OpenBox = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z" />
+    <path d="M3 8.5V17l9 4.5 9-4.5V8.5" />
+    <path d="M12 13v8.5" />
+    <path d="m7.5 6.25 9 4.5" />
+  </svg>
+);
+
+export const SparkleDuo = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M9.5 2.5 11 7l4.5 1.5L11 10l-1.5 4.5L8 10l-4.5-1.5L8 7Z" />
+    <path d="M17.5 13.5 18.4 16l2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9Z" />
+  </svg>
+);
+
+export const TiredPerson = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="7" r="3" />
+    <path d="M4 21v-1a5 5 0 0 1 10 0v1" />
+    <path d="M16 8h5M15.5 12h4.5M16 16h5" />
+  </svg>
+);
+
 export const Cart = (p: P) => (
   <svg {...base(p)}>
     <circle cx="9" cy="21" r="1" />
