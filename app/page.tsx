@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getActiveProduct, getFaqs, getSettings } from "@/lib/data";
+import {
+  getActiveProduct,
+  getFaqs,
+  getReviewImages,
+  getSettings,
+  getTestimonials,
+} from "@/lib/data";
 import { getContent } from "@/lib/content";
 import { formatTaka, toWhatsAppNumber } from "@/lib/utils";
 import SmoothScroll from "@/components/site/SmoothScroll";
@@ -10,10 +16,11 @@ import FloatingCTA from "@/components/site/FloatingCTA";
 import Hero from "@/components/site/Hero";
 import OrderForm from "@/components/site/OrderForm";
 import Faq from "@/components/site/Faq";
-import Gallery from "@/components/site/Gallery";
 import BeforeAfter from "@/components/site/BeforeAfter";
 import ReviewsCarousel from "@/components/site/ReviewsCarousel";
 import VideoLightbox from "@/components/site/VideoLightbox";
+import ImageZoom from "@/components/site/ImageZoom";
+import Gallery from "@/components/site/Gallery";
 import Reveal from "@/components/site/Reveal";
 import {
   Star,
@@ -85,8 +92,9 @@ const FIT_CHECKLIST = [
   "Interior-এর সাথে মানানসই Design",
 ];
 
-// Placeholder reviews — add/remove/edit entries here; the carousel handles any count.
-const REVIEWS = [
+// Fallback reviews — shown only until testimonials are added in
+// Admin → Testimonials. Once any exist in the database, these are ignored.
+const FALLBACK_REVIEWS = [
   {
     name: "Mahmudul Hasan",
     text: "Driving comfort has improved so much. Storage space is a huge bonus!",
@@ -169,7 +177,7 @@ const FALLBACK_FAQS = [
   {
     id: "f5",
     question: "Warranty আছে কি?",
-    answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের মানি-ব্যাক গ্যারান্টি আছে।",
+    answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের ফিটমেন্ট গ্যারান্টি আছে — ঠিকমতো ফিট না হলে আমরা সমাধান করে দেবো।",
   },
 ];
 
@@ -178,12 +186,12 @@ const FALLBACK_FAQS = [
 const GALLERY_CAPTIONS = ["Front View", "Side View", "Open Storage View", "Installed In Aqua"];
 const GALLERY_FALLBACK = [
   "/seed/dz-studio-warm.webp",
-  "/seed/dz-fit-light.webp",
+  "/seed/dz-fit-light-2.webp",
   "/seed/dz-studio-open.webp",
   "/seed/dz-usb-ports.webp",
 ];
 
-const HERO_FALLBACK = "/seed/dz-hero-cabin.webp";
+const HERO_FALLBACK = "/seed/dz-hero-driver.webp";
 
 const CUSTOMER_PHOTO_KEYS = [
   "customer_photo_1",
@@ -195,12 +203,15 @@ const CUSTOMER_PHOTO_KEYS = [
 ];
 
 export default async function Home() {
-  const [settings, product, faqs, content] = await Promise.all([
-    getSettings(),
-    getActiveProduct(),
-    getFaqs(),
-    getContent(),
-  ]);
+  const [settings, product, faqs, content, testimonials, reviewImages] =
+    await Promise.all([
+      getSettings(),
+      getActiveProduct(),
+      getFaqs(),
+      getContent(),
+      getTestimonials(),
+      getReviewImages(),
+    ]);
 
   if (!product) {
     return (
@@ -224,7 +235,16 @@ export default async function Home() {
     caption,
     url: product.images[i]?.url ?? GALLERY_FALLBACK[i],
   }));
-  const customerPhotos = CUSTOMER_PHOTO_KEYS.map((k) => content[k]);
+  // Reviews come from the admin panel (Admin → Testimonials / Image Reviews);
+  // the packaged placeholders show only until the first real ones are added.
+  const reviews =
+    testimonials.length > 0
+      ? testimonials.map((t) => ({ name: t.name, text: t.text, tag: t.tag }))
+      : FALLBACK_REVIEWS;
+  const customerPhotos =
+    reviewImages.length > 0
+      ? reviewImages.map((r) => r.imageUrl)
+      : CUSTOMER_PHOTO_KEYS.map((k) => content[k]);
   const faqItems = faqs.length > 0 ? faqs : FALLBACK_FAQS;
 
   return (
@@ -239,26 +259,28 @@ export default async function Home() {
 
       {/* 2. TRUST / STATS BAR */}
       <section className="border-y border-white/10 bg-night-2">
-        <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 py-3.5 sm:px-8 sm:py-10">
           <Reveal className="grid grid-cols-3 divide-x divide-white/10">
             {STATS.map((s) => (
-              <div key={s.label} className="flex flex-col items-center gap-1.5 px-2 text-center sm:gap-2.5">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/15 text-brand sm:h-12 sm:w-12">
-                  <s.icon className="h-5 w-5 sm:h-6 sm:w-6" />
+              <div key={s.label} className="flex flex-row items-center justify-center gap-2 px-1 text-left sm:flex-col sm:gap-2.5 sm:text-center">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-brand/15 text-brand sm:h-12 sm:w-12 sm:rounded-xl">
+                  <s.icon className="h-3.5 w-3.5 sm:h-6 sm:w-6" />
                 </span>
-                <span className="font-display text-xl font-extrabold text-white sm:text-3xl">{s.value}</span>
-                <span className="text-[11px] leading-tight text-white/55 sm:text-sm">{s.label}</span>
+                <span className="flex flex-col leading-tight sm:contents">
+                  <span className="font-display text-sm font-extrabold text-white sm:text-3xl">{s.value}</span>
+                  <span className="text-[10px] leading-tight text-white/55 sm:text-sm">{s.label}</span>
+                </span>
               </div>
             ))}
           </Reveal>
         </div>
         <Reveal className="border-t border-white/10 bg-night">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-5 py-3.5 text-xs font-semibold text-white/80 sm:text-sm">
-            <span className="inline-flex items-center gap-2">
-              <Wallet className="h-4 w-4 text-brand" /> 7-Day Money Back Guarantee
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-5 py-2 text-[10px] font-semibold text-white/80 sm:gap-x-8 sm:gap-y-2 sm:py-3.5 sm:text-sm">
+            <span className="inline-flex items-center gap-1.5 sm:gap-2">
+              <Car className="h-3.5 w-3.5 text-brand sm:h-4 sm:w-4" /> Designed Specifically For Toyota Aqua
             </span>
-            <span className="inline-flex items-center gap-2">
-              <Truck className="h-4 w-4 text-brand" /> Nationwide Delivery
+            <span className="inline-flex items-center gap-1.5 sm:gap-2">
+              <Shield className="h-3.5 w-3.5 text-brand sm:h-4 sm:w-4" /> 7-Day Fitment Guarantee
             </span>
           </div>
         </Reveal>
@@ -371,17 +393,14 @@ export default async function Home() {
                 </p>
               </div>
 
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl glow-brand">
-                <Image
-                  src={content.fit_image}
-                  alt="DriveZen Premium Armrest — perfect fit for Toyota Aqua"
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  quality={85}
-                  className="object-cover"
-                />
-              </div>
+              <ImageZoom
+                src={content.fit_image}
+                alt="DriveZen Premium Armrest — perfect fit for Toyota Aqua"
+                wrapperClassName="relative block aspect-[4/3] w-full overflow-hidden rounded-2xl glow-brand cursor-zoom-in"
+                imageClassName="object-cover"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                quality={85}
+              />
             </div>
           </Reveal>
 
@@ -460,7 +479,7 @@ export default async function Home() {
 
           {/* Review carousel — auto-scrolls every 4s, arrows + swipe, hold to pause */}
           <Reveal delay={80} className="mt-8 sm:mt-12">
-            <ReviewsCarousel reviews={REVIEWS} />
+            <ReviewsCarousel reviews={reviews} />
           </Reveal>
 
           {/* Customer photo strip */}
@@ -470,20 +489,15 @@ export default async function Home() {
             </p>
             <div className="no-scrollbar mt-5 flex snap-x gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-6 sm:overflow-visible">
               {customerPhotos.map((src, i) => (
-                <span
+                <ImageZoom
                   key={src + i}
-                  className="relative block aspect-square w-24 shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 sm:w-auto"
-                >
-                  <Image
-                    src={src}
-                    alt={`DriveZen customer photo ${i + 1}`}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 640px) 25vw, 15vw"
-                    quality={75}
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </span>
+                  src={src}
+                  alt={`DriveZen customer photo ${i + 1}`}
+                  wrapperClassName="relative block aspect-square w-24 shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 sm:w-auto cursor-zoom-in"
+                  imageClassName="object-cover transition-transform duration-500 hover:scale-105"
+                  sizes="(max-width: 640px) 25vw, 15vw"
+                  quality={75}
+                />
               ))}
             </div>
           </Reveal>
@@ -493,16 +507,22 @@ export default async function Home() {
       {/* 8. WHY CHOOSE + EVERYTHING INCLUDED */}
       <section className="border-t border-tline bg-paper px-5 py-12 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2 lg:gap-12">
-          <Reveal>
+          {/* Flex column + flex-1 grid so the four cards stretch to match the
+              taller "Everything Included" card next to them on desktop. */}
+          <Reveal className="flex flex-col">
             <h2
               className="font-display font-extrabold leading-tight text-tdark"
               style={{ fontSize: "clamp(1.5rem, 5vw, 2.2rem)" }}
             >
               Why Aqua Owners Choose <span className="text-brand">DriveZen</span>
             </h2>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid flex-1 gap-4 sm:grid-cols-2">
               {WHY_CHOOSE.map((w, i) => (
-                <Reveal key={w.title} delay={i * 70} className="card-light p-5 hover:-translate-y-1">
+                <Reveal
+                  key={w.title}
+                  delay={i * 70}
+                  className="card-light flex flex-col items-center p-5 text-center hover:-translate-y-1"
+                >
                   <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand/12 text-brand">
                     <w.icon className="h-5 w-5" />
                   </span>
@@ -530,17 +550,14 @@ export default async function Home() {
                 </li>
               ))}
             </ul>
-            <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-white/25">
-              <Image
-                src={content.included_image}
-                alt="DriveZen Premium Armrest package"
-                fill
-                loading="lazy"
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                quality={80}
-                className="object-cover"
-              />
-            </div>
+            <ImageZoom
+              src={content.included_image}
+              alt="DriveZen Premium Armrest package"
+              wrapperClassName="relative mt-6 block aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/25 cursor-zoom-in"
+              imageClassName="object-cover"
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              quality={80}
+            />
           </Reveal>
         </div>
       </section>

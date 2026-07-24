@@ -115,6 +115,34 @@ model Faq {
   sortOrder Int    @default(0)
 }
 
+// Text testimonials shown in the "What Aqua Owners Say" carousel.
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  text      String
+  tag       String   @default("")
+  rating    Int      @default(5) // 1-5 stars
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+// Customer photo reviews shown in the "Join Hundreds Of Aqua Owners" strip.
+// Images are compressed to WebP on upload (see /api/admin/upload).
+model ReviewImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String   @default("")
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([isActive, sortOrder])
+}
+
 model Order {
   id             String  @id @default(cuid())
   orderNumber    String  @unique

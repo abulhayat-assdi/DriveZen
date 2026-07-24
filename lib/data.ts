@@ -61,4 +61,20 @@ export async function getFaqs() {
   return prisma.faq.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
+// Active text testimonials for the "What Aqua Owners Say" carousel.
+export async function getTestimonials() {
+  return prisma.testimonial.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
+// Active customer photo reviews for the "Join Hundreds Of Aqua Owners" strip.
+export async function getReviewImages() {
+  return prisma.reviewImage.findMany({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
 export type ActiveProduct = NonNullable<Awaited<ReturnType<typeof getActiveProduct>>>;

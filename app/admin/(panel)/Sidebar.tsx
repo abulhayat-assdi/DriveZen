@@ -19,6 +19,8 @@ import {
   Tag,
   Ban,
   Cart,
+  Star,
+  ThumbsUp,
 } from "@/components/icons";
 
 const NAV = [
@@ -28,6 +30,8 @@ const NAV = [
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/products", label: "Products", icon: Box },
   { href: "/admin/content", label: "Content Management", icon: Edit },
+  { href: "/admin/testimonials", label: "Testimonials", icon: Star },
+  { href: "/admin/reviews", label: "Image Reviews", icon: ThumbsUp },
   { href: "/admin/faqs", label: "FAQs", icon: Help },
   { href: "/admin/blocklist", label: "Blocklist", icon: Ban },
   { href: "/admin/settings", label: "Settings", icon: Cog },

@@ -15,12 +15,16 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const HERO = "/seed/dz-hero-cabin.webp";
+// Every one of the ten source photos is used exactly once in a "hero" slot
+// below, so no two prominent frames on the page show the same shot.
+const HERO = "/seed/dz-hero-driver.webp";
 
-// The four gallery slots, in the order the landing page captions them.
+// The four gallery slots, in the order the landing page captions them:
+// Front View · Side View · Open Storage View · Installed In Aqua.
+// All four are portrait/square so they survive the 4:5 gallery crop.
 const GALLERY: { url: string; alt: string }[] = [
-  { url: "/seed/dz-studio-warm.webp", alt: "Premium armrest, lid open — front view" },
-  { url: "/seed/dz-fit-light.webp", alt: "Armrest fitted between the front seats — side view" },
+  { url: "/seed/dz-studio-warm.webp", alt: "Premium armrest, studio front view" },
+  { url: "/seed/dz-fit-light-2.webp", alt: "Armrest fitted between the front seats — side view" },
   { url: "/seed/dz-studio-open.webp", alt: "Open storage compartment with charging cable" },
   { url: "/seed/dz-usb-ports.webp", alt: "USB-A and USB-C ports, installed in a Toyota Aqua" },
 ];
@@ -28,13 +32,16 @@ const GALLERY: { url: string; alt: string }[] = [
 // Section photos stored in SiteContent — keep in sync with the "Section Images"
 // group in lib/content.ts.
 const SECTION_IMAGES: Record<string, string> = {
-  fit_image: "/seed/dz-fit-light-2.webp",
+  fit_image: "/seed/dz-fit-light.webp",
+  // The slider wipes vertically, so the AFTER shot has to carry the armrest in
+  // its right half — dz-console-cup does, the tighter dark-cabin shot does not.
   before_image: "/seed/dz-before-console.webp",
-  after_image: "/seed/dz-dark-cabin.webp",
+  after_image: "/seed/dz-console-cup.webp",
   install_video_thumb: "/seed/dz-driver-pov.webp",
-  included_image: "/seed/dz-console-cup.webp",
+  included_image: "/seed/dz-dark-cabin.webp",
+  // Customer strip — in-car shots only, so they read as owner photos.
   customer_photo_1: "/seed/dz-driver-pov.webp",
-  customer_photo_2: "/seed/dz-fit-light.webp",
+  customer_photo_2: "/seed/dz-hero-driver.webp",
   customer_photo_3: "/seed/dz-dark-cabin.webp",
   customer_photo_4: "/seed/dz-usb-ports.webp",
   customer_photo_5: "/seed/dz-console-cup.webp",

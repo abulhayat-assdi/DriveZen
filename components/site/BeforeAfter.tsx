@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Close, ZoomIn } from "@/components/icons";
 
 export default function BeforeAfter({
   beforeSrc,
@@ -13,6 +14,18 @@ export default function BeforeAfter({
   const trackRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState(50);
   const dragging = useRef(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setZoomOpen(false);
+    window.addEventListener("keydown", onKey);
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.documentElement.style.overflow = "";
+    };
+  }, [zoomOpen]);
 
   const updateFromClientX = useCallback((clientX: number) => {
     const el = trackRef.current;
@@ -36,9 +49,12 @@ export default function BeforeAfter({
   };
 
   return (
+    <>
+    {/* 4:3 at every breakpoint: the BEFORE shot is native 4:3 and the AFTER shot
+        is 3:4 portrait, so a 16:9 frame would crop the armrest away. */}
     <div
       ref={trackRef}
-      className="relative aspect-[4/3] w-full touch-pan-y select-none overflow-hidden rounded-2xl border border-tline shadow-[0_8px_30px_rgba(0,0,0,0.08)] sm:aspect-[16/9]"
+      className="relative aspect-[4/3] w-full touch-pan-y select-none overflow-hidden rounded-2xl border border-tline shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={stop}
@@ -82,6 +98,20 @@ export default function BeforeAfter({
         With DriveZen Armrest
       </span>
 
+      {/* Zoom trigger — separate from the drag handle so it doesn't fight the slider */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setZoomOpen(true);
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute bottom-3 right-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-colors duration-300 hover:bg-brand"
+        aria-label="Zoom image"
+      >
+        <ZoomIn className="h-4 w-4" />
+      </button>
+
       {/* Divider + handle */}
       <div
         className="pointer-events-none absolute inset-y-0 z-10"
@@ -95,5 +125,35 @@ export default function BeforeAfter({
         </div>
       </div>
     </div>
+
+    {/* Lightbox */}
+    {zoomOpen && (
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+        <div
+          className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+          onClick={() => setZoomOpen(false)}
+        />
+        <div className="animate-fade-up relative w-full max-w-3xl">
+          <button
+            onClick={() => setZoomOpen(false)}
+            className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full border border-white/25 text-white transition-colors duration-300 hover:border-brand"
+            aria-label="Close image"
+          >
+            <Close className="h-5 w-5" />
+          </button>
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-night-2">
+            <Image
+              src={afterSrc}
+              alt="With DriveZen Armrest"
+              fill
+              sizes="100vw"
+              quality={90}
+              className="object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

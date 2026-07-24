@@ -171,6 +171,13 @@ export const Eye = (p: P) => (
   </svg>
 );
 
+export const ZoomIn = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3M11 8v6M8 11h6" />
+  </svg>
+);
+
 export const External = (p: P) => (
   <svg {...base(p)}>
     <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />

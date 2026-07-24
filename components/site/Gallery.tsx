@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import ImageZoom from "@/components/site/ImageZoom";
 
 export type GalleryItem = { url: string; caption: string };
 
@@ -16,17 +17,16 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
       {/* Main image — 4:5 portrait. The product shots are taller than they are
           wide, so a landscape frame centre-crops the lid and cup holder away. */}
       <div className="card-light relative aspect-[4/5] overflow-hidden !p-0">
-        <Image
+        <ImageZoom
           key={current.url}
           src={current.url}
           alt={current.caption}
-          fill
-          loading="lazy"
+          wrapperClassName="absolute inset-0 block h-full w-full cursor-zoom-in"
+          imageClassName="animate-fade-up rounded-2xl object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
           quality={85}
-          className="animate-fade-up rounded-2xl object-cover"
         />
-        <span className="absolute bottom-3 left-3 rounded-full bg-black/70 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
           {current.caption}
         </span>
       </div>

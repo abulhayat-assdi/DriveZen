@@ -58,15 +58,15 @@ async function main() {
         "Plug-and-play installation with no drilling or cutting — comfortable, stylish and premium.",
       description:
         "Does your Toyota Aqua only have a driver-side armrest, leaving your passenger without support? Not anymore. Our custom-fit premium armrest is designed exclusively for the Aqua — it blends seamlessly with your interior and adds comfort and style on every journey, from daily commutes to long drives.",
-      heroImage: "/seed/dz-hero-cabin.webp",
+      heroImage: "/seed/dz-hero-driver.webp",
       isActive: true,
       sortOrder: 0,
       // The four gallery slots, in the order the landing page captions them:
       // Front View · Side View · Open Storage View · Installed In Aqua.
       images: {
         create: [
-          { url: "/seed/dz-studio-warm.webp", alt: "Premium armrest, lid open — front view", sortOrder: 0 },
-          { url: "/seed/dz-fit-light.webp", alt: "Armrest fitted between the front seats — side view", sortOrder: 1 },
+          { url: "/seed/dz-studio-warm.webp", alt: "Premium armrest, studio front view", sortOrder: 0 },
+          { url: "/seed/dz-fit-light-2.webp", alt: "Armrest fitted between the front seats — side view", sortOrder: 1 },
           { url: "/seed/dz-studio-open.webp", alt: "Open storage compartment with charging cable", sortOrder: 2 },
           { url: "/seed/dz-usb-ports.webp", alt: "USB-A and USB-C ports, installed in a Toyota Aqua", sortOrder: 3 },
         ],
@@ -136,9 +136,37 @@ async function main() {
       },
       {
         question: "Warranty আছে কি?",
-        answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের মানি-ব্যাক গ্যারান্টি আছে।",
+        answer: "হ্যাঁ, প্রোডাক্টে কোয়ালিটি গ্যারান্টি সহ ৭ দিনের ফিটমেন্ট গ্যারান্টি আছে — ঠিকমতো ফিট না হলে আমরা সমাধান করে দেবো।",
         sortOrder: 4,
       },
+    ],
+  });
+
+  // ---- Testimonials (text reviews carousel) ----
+  await prisma.testimonial.deleteMany({});
+  await prisma.testimonial.createMany({
+    data: [
+      { name: "Mahmudul Hasan", text: "Driving comfort has improved so much. Storage space is a huge bonus!", tag: "Toyota Aqua Owner", rating: 5, sortOrder: 0 },
+      { name: "Sadia Rahman", text: "Looks premium and fits perfectly. Feels like it came with the car from factory.", tag: "Toyota Aqua Owner", rating: 5, sortOrder: 1 },
+      { name: "Rashed Ahmed", text: "Installation was super easy. Quality is excellent. Highly recommended!", tag: "Verified Buyer", rating: 5, sortOrder: 2 },
+      { name: "Tanvir Islam", text: "লং ড্রাইভে হাতের আরাম পুরো বদলে গেছে। Highly satisfied!", tag: "Toyota Aqua Owner", rating: 5, sortOrder: 3 },
+      { name: "Nusrat Jahan", text: "Storage space-টা দারুণ কাজের। ফোন আর ওয়ালেট এখন এক জায়গায় থাকে।", tag: "Verified Buyer", rating: 5, sortOrder: 4 },
+      { name: "Imran Chowdhury", text: "Delivery ছিল দ্রুত, প্যাকেজিং ভালো। Armrest-এর ফিনিশিংটা আসলেই premium।", tag: "Toyota Aqua Owner", rating: 5, sortOrder: 5 },
+      { name: "Farhan Rahman", text: "দাম অনুযায়ী quality অসাধারণ। Aqua-র interior-এর সাথে perfectly match করে।", tag: "Verified Buyer", rating: 5, sortOrder: 6 },
+      { name: "Sharmin Akter", text: "Installation নিজেই করেছি ৫ মিনিটে। মনে হয় factory fitted।", tag: "Toyota Aqua Owner", rating: 5, sortOrder: 7 },
+    ],
+  });
+
+  // ---- Image reviews (customer photo strip) ----
+  await prisma.reviewImage.deleteMany({});
+  await prisma.reviewImage.createMany({
+    data: [
+      { imageUrl: "/seed/dz-driver-pov.webp", caption: "", sortOrder: 0 },
+      { imageUrl: "/seed/dz-hero-driver.webp", caption: "", sortOrder: 1 },
+      { imageUrl: "/seed/dz-dark-cabin.webp", caption: "", sortOrder: 2 },
+      { imageUrl: "/seed/dz-usb-ports.webp", caption: "", sortOrder: 3 },
+      { imageUrl: "/seed/dz-console-cup.webp", caption: "", sortOrder: 4 },
+      { imageUrl: "/seed/dz-fit-light-2.webp", caption: "", sortOrder: 5 },
     ],
   });
 
