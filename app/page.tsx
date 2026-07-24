@@ -301,14 +301,18 @@ export default async function Home() {
             </p>
           </Reveal>
 
-          <div className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-3 sm:mt-12 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PROBLEMS.map((p, i) => (
-              <Reveal key={p.title} delay={i * 80} className="card-light p-6 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)]">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand/12 text-brand">
-                  <p.icon className="h-6 w-6" />
+              <Reveal
+                key={p.title}
+                delay={i * 80}
+                className="card-light flex flex-col items-center p-4 text-center hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)] sm:p-6"
+              >
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand/12 text-brand sm:h-12 sm:w-12">
+                  <p.icon className="h-4 w-4 sm:h-6 sm:w-6" />
                 </span>
-                <h3 className="mt-4 font-display text-base font-bold leading-snug text-tdark">{p.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-tmuted">{p.text}</p>
+                <h3 className="mt-2.5 font-display text-sm font-bold leading-snug text-tdark sm:mt-4 sm:text-base">{p.title}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-tmuted sm:mt-2 sm:text-sm">{p.text}</p>
               </Reveal>
             ))}
           </div>
