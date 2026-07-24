@@ -152,14 +152,50 @@ e.g. with `rsync` or a nightly `tar` to off-VPS storage. Put both backup command
 | What | Where |
 |---|---|
 | Postgres data files | Docker volume `drivezen_pgdata` (name pinned by `COMPOSE_PROJECT_NAME` in `.env`) |
-| Uploaded product images | `./data/uploads` on the VPS (bind-mounted into the app container) |
+| Uploaded product images | `./data/uploads` on the VPS, bind-mounted to `/app/data/uploads` in the container |
+| Default photo set (in git) | `public/seed/` — baked into the image at build time |
 | App source / build | wherever you cloned the repo |
+
+### Why uploads are not stored in `public/`
+
+Next.js indexes `public/` **once, when the server starts**, and only serves the files it found then
+(`publicFolderItems` in `next/dist/server/lib/router-utils/filesystem.js`). A file written into
+`public/` by the running server is never served — uploads would 404 until the container restarted,
+then disappear again on the next redeploy.
+
+So uploads are written to `/app/data/uploads` and served by `app/uploads/[...path]/route.ts`, which
+reads from disk per request. Public URLs are unchanged (`/uploads/<name>`), so image URLs already in
+the database keep working. Override the location with the `UPLOADS_DIR` env var if you mount
+somewhere else.
+
+### Deploying on Coolify (single app, no docker-compose)
+
+Two things must be set in the Coolify UI:
+
+1. **Persistent storage** — mount a volume at `/app/data/uploads`. If you previously mounted
+   `/app/public/uploads`, edit that entry to the new path; the host data is the same, so existing
+   uploads carry over.
+2. **Environment** — `DATABASE_URL` and `AUTH_SECRET` as usual. `UPLOADS_DIR` is optional.
+
+To point every image slot back at the photo set committed in `public/seed/` (useful when the
+database still references uploads that no longer exist), open a terminal on the app container and
+run:
+
+```bash
+npx tsx prisma/set-images.ts
+```
+
+It only rewrites image URLs — orders, settings and FAQs are untouched, and re-running it is a no-op.
+With docker-compose the equivalent is `docker compose --profile tools run --rm set-images`.
 
 ## Troubleshooting
 
 - **`docker compose up` fails at `migrate`:** check `docker compose logs migrate` — usually a bad
   `DATABASE_URL`/`POSTGRES_*` mismatch in `.env`.
 - **Images 404 after redeploy:** confirm the `./data/uploads` bind mount is present in
-  `docker-compose.yml` under the `app` service — without it, uploads only live inside the old
-  container's filesystem and are lost on rebuild.
+  `docker-compose.yml` under the `app` service (target `/app/data/uploads`) — without it, uploads
+  only live inside the old container's filesystem and are lost on rebuild. On Coolify, check the
+  persistent-storage entry points at `/app/data/uploads`, not `/app/public/uploads`.
+- **A just-uploaded image shows as broken:** the volume target is wrong, or the container can't
+  write to it. Check `docker compose logs app` and that `/app/data/uploads` is writable by uid 1001.
 - **502 from nginx:** the `app` container isn't up yet or crashed — `docker compose logs app`.

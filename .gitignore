@@ -41,9 +41,10 @@ yarn-error.log*
 /prisma/*.db
 /prisma/*.db-journal
 
-# user-uploaded media
-/public/uploads/*
-!/public/uploads/.gitkeep
+# user-uploaded media — written to /data/uploads at runtime and served by
+# app/uploads/[...path]/route.ts, NOT from public/ (Next only serves public
+# files that existed when the server booted). /public/uploads is legacy.
+/public/uploads/
 
 # Postgres data + uploads volume mounted from docker-compose.yml on the VPS
 /data/

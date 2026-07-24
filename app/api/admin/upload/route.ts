@@ -4,6 +4,7 @@ import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import sharp from "sharp";
+import { UPLOADS_DIR, UPLOADS_URL_PREFIX } from "@/lib/uploads";
 
 const EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -61,9 +62,8 @@ export async function POST(req: Request) {
   }
 
   const name = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${outExt}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), outBuffer);
+  await mkdir(UPLOADS_DIR, { recursive: true });
+  await writeFile(path.join(UPLOADS_DIR, name), outBuffer);
 
-  return NextResponse.json({ ok: true, url: `/uploads/${name}` });
+  return NextResponse.json({ ok: true, url: `${UPLOADS_URL_PREFIX}/${name}` });
 }

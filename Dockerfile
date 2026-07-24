@@ -33,9 +33,13 @@ COPY --from=builder /app/prisma ./prisma
 # app instead of via docker-compose.yml).
 COPY --from=builder /app/node_modules ./node_modules
 
-# Uploaded product images are written here at runtime — mount a volume
-# over this path (see docker-compose.yml) so they survive redeploys.
-RUN mkdir -p ./public/uploads && chown -R nextjs:nodejs ./public/uploads
+# Uploaded product images are written here at runtime and served by
+# app/uploads/[...path]/route.ts. This is deliberately outside ./public —
+# Next.js indexes public/ once at boot and never serves files added after,
+# so runtime uploads placed there 404 until the container restarts.
+# Mount a volume over this path (see docker-compose.yml) so uploads survive
+# redeploys. Override the location with UPLOADS_DIR if you mount elsewhere.
+RUN mkdir -p ./data/uploads && chown -R nextjs:nodejs ./data
 
 USER nextjs
 EXPOSE 3000

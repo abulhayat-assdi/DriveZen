@@ -47,6 +47,21 @@ services:
       db:
         condition: service_healthy
 
+  # Repoints every image slot at the photo set committed under public/seed/.
+  # Safe on a live database — it only rewrites image URLs, never orders.
+  #   docker compose --profile tools run --rm set-images
+  set-images:
+    build:
+      context: .
+      target: builder
+    command: ["npx", "tsx", "prisma/set-images.ts"]
+    profiles: ["tools"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+
   app:
     build:
       context: .
@@ -59,8 +74,10 @@ services:
       - "${APP_PORT:-3000}:3000"
     volumes:
       # Uploaded product images live on the VPS disk, outside the container,
-      # so they survive rebuilds/redeploys.
-      - ./data/uploads:/app/public/uploads
+      # so they survive rebuilds/redeploys. Same host directory as before —
+      # only the path inside the container moved out of ./public, so existing
+      # uploads keep working.
+      - ./data/uploads:/app/data/uploads
     depends_on:
       db:
         condition: service_healthy
